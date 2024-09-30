@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    const title = 'Dashboard';
+    const title = 'ダッシュボード';
     return MaterialApp(
       title: title,
       home: Scaffold(
