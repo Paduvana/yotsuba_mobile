@@ -28,11 +28,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    const title = 'Long List';
+    const title = 'Dashboard';
     return MaterialApp(
       title: title,
       home: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.teal, // Background Color
           title: const Text(title),
         ),
         body: _getBodyContent(), // Use the correct body content
