@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'BottomNavBar.dart';  // Import the BottomNavBar widget
+import 'main.dart'; // Import main.dart to navigate to MyHomePage
 
 class LogoutPage extends StatefulWidget {
   @override
@@ -13,8 +15,9 @@ class _LogoutPageState extends State<LogoutPage> {
   String _userName = '';
   String _email = '';
   String _password = '';
+  int _selectedIndex = 0; // Track the selected index for BottomNavBar
 
-//Function that picks an image
+  // Function to pick an image
   Future<void> _pickImage() async {
     final pickedFile = await showDialog<XFile>(
       context: context,
@@ -40,11 +43,30 @@ class _LogoutPageState extends State<LogoutPage> {
         );
       },
     );
-//image picker
+
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
       });
+    }
+  }
+
+  // Function to handle navigation item tap
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index; // Update the selected index
+    });
+    // Handle navigation logic based on index
+    switch (index) {
+      case 0:
+      // Navigate to Home
+        break;
+      case 1:
+      // Navigate to Business
+        break;
+      case 2:
+      // Navigate to School
+        break;
     }
   }
 
@@ -58,153 +80,159 @@ class _LogoutPageState extends State<LogoutPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child:
-        Column(
-            children: <Widget>[
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: CircleAvatar(
-                      radius: 35,
-                      backgroundImage: _image != null ? FileImage(_image!) : null,
-                      child: _image == null ? const Icon(Icons.camera_alt, size: 30) : null,
+        child: Column(
+          children: <Widget>[
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: CircleAvatar(
+                    radius: 35,
+                    backgroundImage: _image != null ? FileImage(_image!) : null,
+                    child: _image == null
+                        ? const Icon(Icons.camera_alt, size: 30)
+                        : null,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 295,
+                  height: 90,
+                  child: ElevatedButton(
+                    onPressed: _pickImage,
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      '画像をアップロードする',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 17,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: 295,
-                    height:90, // Space between avatar and button
-                    child:
-                    ElevatedButton(
-                      onPressed: _pickImage,
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0), // Change the radius here
+                )
+              ],
+            ),
+            const SizedBox(height: 28),
+            _buildTextField('名前', 'あなたの名前を入力してください', (value) {
+              _userName = value;
+            }),
+            const SizedBox(height: 28),
+            _buildTextField('メールアドレス', 'email@domain.com', (value) {
+              _email = value;
+            }),
+            const SizedBox(height: 28),
+            _buildTextField('パスワード', '*********', (value) {
+              _password = value;
+            }, obscureText: true),
+            const SizedBox(height: 60),
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      contentPadding: const EdgeInsets.all(20),
+                      content: const SizedBox(
+                        width: 400,
+                        height: 100,
+                        child: Center(
+                          child: Text(
+                            "更新されました",
+                            style: TextStyle(fontSize: 18),
+                          ),
                         ),
-                        elevation: 0, //no shadow
                       ),
-                      child: const Text(
-                        '画像をアップロードする',
-                        style: TextStyle(color: Colors.black,
-                            fontSize: 17),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(height: 28),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '名前',  // "Name" in Japanese
-                    style: TextStyle(
-                      fontSize: 18,  // Adjust the font size if needed
-                      color: Colors.black,  // Adjust the text color
-                    ),
-                  ),
-                  const SizedBox(height: 8),  // Spacing between the label and the TextField
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'あなたの名前を入力してください',  // "Enter your name"
-                      labelStyle: TextStyle(color: Colors.black45),
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _userName = value; // Update the username when typed
-                      });
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 28),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'メールアドレス',  // "Email Address"
-                    style: TextStyle(
-                      fontSize: 16,  // Adjust the font size as needed
-                      color: Colors.black,  // Adjust the color as needed
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'email@domain.com',
-                      labelStyle: TextStyle(color: Colors.black45),
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _email = value; // Update the email when typed
-                      });
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 28),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'パスワード',  // "password"
-                    style: TextStyle(
-                      fontSize: 16,  // Adjust the font size as needed
-                      color: Colors.black,  // Adjust the color as needed
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: '*********  ',
-                      labelStyle: TextStyle(color: Colors.black45),
-                      border: OutlineInputBorder(),
-                    ),
-                    obscureText: true, // Hide the password input
-                    onChanged: (value) {
-                      setState(() {
-                        _password = value; // Update the password when typed
-                      });
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 52),
-              ElevatedButton(
-                onPressed: () {
-                  // Handle update action (e.g., save user info)
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Profile updated successfully!')),
-                  );
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent,
-                    foregroundColor: Colors.white),
-                child: const Text('Update'),
-              ),
-              const Spacer(), // Push the Logout button to the bottom
-              ElevatedButton(
-                onPressed: () {
-                  // Handle logout action (e.g., save data)
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.logout, color: Colors.black), // Logout icon
-                    SizedBox(width: 8), // Space between icon and text
-                    Text('Logout', style: TextStyle(color: Colors.black)), // Logout text
-                  ],
+                      actions: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: TextButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text("OK"),
+                          ),
+                        )
+                      ],
+                    );
+                  },
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
-            ]
+              child: const Text('アップデート'),
+            ),
+            const Spacer(),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyHomePage(title: 'Yotsuba')),
+                );              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.logout, color: Colors.black),
+                  SizedBox(width: 12),
+                  Text('サインアウト', style: TextStyle(color: Colors.black)),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: _selectedIndex, // Pass the selected index
+        onItemTapped: _onItemTapped, // Pass the callback function
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+      String label,
+      String hint,
+      Function(String) onChanged, {
+        bool obscureText = false,
+      }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 18,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          decoration: InputDecoration(
+            labelText: hint,
+            labelStyle: const TextStyle(color: Colors.black45),
+            border: const OutlineInputBorder(),
+          ),
+          obscureText: obscureText,
+          onChanged: onChanged,
+        ),
+      ],
     );
   }
 }
