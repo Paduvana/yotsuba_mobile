@@ -53,28 +53,36 @@ class _HomePageState extends State<HomePage> {
         return ListView(
           children: [
             ReservationDialogBox(
-              title: '返却期限が過ぎました',
+              title: '返却期限が過ぎてしまいました。',
               reservationNumber: '0000',
               usagePeriod: '0000-00-00 - 0000-00-00',
               quantity: '0',
+              titleColor: Colors.red, // Set title color to orange
+              backgroundColor: Colors.red[100]!, // Light red background
             ),
             ReservationDialogBox(
-              title: '返却予定日は今日です',
+              title: '本日返却予定があります。',
               reservationNumber: '0000',
               usagePeriod: '0000-00-00 - 0000-00-00',
               quantity: '0',
+              titleColor: Colors.red, // Set title color to orange
+              backgroundColor: Colors.white, // Default background
             ),
             ReservationDialogBox(
-              title: 'まもなく返却予定です',
+              title: '近日返却予定があります。',
               reservationNumber: '0000',
               usagePeriod: '0000-00-00 - 0000-00-00',
+              titleColor: Colors.orange, // Set title color to orange
               quantity: '0',
+              backgroundColor: Colors.white, // Default background
             ),
             ReservationDialogBox(
-              title: '現在使用中です',
+              title: 'ご利用中',
               reservationNumber: '0000',
               usagePeriod: '0000-00-00 - 0000-00-00',
               quantity: '0',
+              titleColor: Colors.greenAccent, // Set title color to orange
+              backgroundColor: Colors.white, // Default background
             ),
           ],
         );

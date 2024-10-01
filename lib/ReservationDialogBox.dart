@@ -5,12 +5,17 @@ class ReservationDialogBox extends StatelessWidget {
   final String reservationNumber;
   final String usagePeriod;
   final String quantity;
+  final Color backgroundColor; //  parameter for background color
+  final Color titleColor; //  parameter for title color
 
   const ReservationDialogBox({
     required this.title,
     required this.reservationNumber,
     required this.usagePeriod,
     required this.quantity,
+    required this.backgroundColor, //  parameter for background color
+    this.titleColor = Colors.black, // Default title color
+
   });
 
   @override
@@ -18,6 +23,7 @@ class ReservationDialogBox extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.all(10.0),
       elevation: 5.0,
+      color: backgroundColor, // Set the background color of the card
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -26,9 +32,9 @@ class ReservationDialogBox extends StatelessWidget {
             // Title with underline
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20.0, // Title font size
-                color: Colors.red, // Title text color
+                color: titleColor, // Use the titleColor parameter
                 fontWeight: FontWeight.bold, // Title bold text
                 decoration: TextDecoration.underline, // Underline the title
               ),
@@ -41,7 +47,7 @@ class ReservationDialogBox extends StatelessWidget {
               children: const [
                 Expanded(
                   child: Text(
-                    '予約番号',
+                    '予約No.',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
@@ -50,7 +56,7 @@ class ReservationDialogBox extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    '使用期間',
+                    '利用期間',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
@@ -68,7 +74,7 @@ class ReservationDialogBox extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    'オプション',
+                    '詳細',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
@@ -77,6 +83,11 @@ class ReservationDialogBox extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 5),
+
+            // Divider for separation after the labels
+            const Divider(thickness: 1.5, color: Colors.grey),
+
             const SizedBox(height: 5),
 
             // Data Row (Corresponding to the Labels)
@@ -167,6 +178,9 @@ class ReservationDialogBox extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 10),
+
+            // Additional details can go here if needed
           ],
         ),
       ),
