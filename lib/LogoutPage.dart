@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'BottomNavBar.dart';  // Import the BottomNavBar widget
+import 'HomePage.dart';
 import 'main.dart'; // Import main.dart to navigate to MyHomePage
 
 class LogoutPage extends StatefulWidget {
@@ -59,13 +60,15 @@ class _LogoutPageState extends State<LogoutPage> {
     // Handle navigation logic based on index
     switch (index) {
       case 0:
-      // Navigate to Home
+      // Navigate to HomePage when Top button is clicked
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()), // Navigate to HomePage
+        );
         break;
       case 1:
-      // Navigate to Business
         break;
       case 2:
-      // Navigate to School
         break;
     }
   }
@@ -73,6 +76,7 @@ class _LogoutPageState extends State<LogoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // Set the background color to white
       appBar: AppBar(
         title: const Text('設定'),
         centerTitle: true,
