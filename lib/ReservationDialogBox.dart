@@ -5,14 +5,14 @@ class ReservationDialogBox extends StatelessWidget {
   final String reservationNumber;
   final String usagePeriod;
   final String quantity;
-  final Color backgroundColor; // parameter for background color
-  final Color titleColor; // parameter for title color
-  final DateTime reservationDate; // Added for reservation date
-  final String machineName; // Added for machine name
-  final String period; // Added for period
-  final String unitPrice; // Added for unit price
-  final int numberOfDays; // Added for number of days
-  final String amount; // Added for amount
+  final Color backgroundColor;
+  final Color titleColor;
+  final DateTime reservationDate;
+  final String machineName;
+  final String period;
+  final String unitPrice;
+  final int numberOfDays;
+  final String amount;
 
   const ReservationDialogBox({
     required this.title,
@@ -40,7 +40,6 @@ class ReservationDialogBox extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title with underline
             Text(
               title,
               style: TextStyle(
@@ -51,8 +50,6 @@ class ReservationDialogBox extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-
-            // Labels Row (Reservation Number, Usage Period, Quantity + More Options)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
@@ -63,11 +60,8 @@ class ReservationDialogBox extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 5),
-
             const Divider(thickness: 1.5, color: Colors.grey),
             const SizedBox(height: 5),
-
-            // Data Row (Corresponding to the Labels)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -79,95 +73,110 @@ class ReservationDialogBox extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
                       onTap: () {
-                        // Show details dialog with larger size
-                        showDialog(
+                        showGeneralDialog(
                           context: context,
-                          builder: (BuildContext context) {
-                            return Dialog(
-                              child: Container(
-                                width: 400, // Set the width of the dialog
-                                padding: const EdgeInsets.all(20.0), // Add some padding
+                          barrierDismissible: true,
+                          barrierLabel: '',
+                          pageBuilder: (context, animation1, animation2) {
+                            return Scaffold(
+                              appBar: AppBar(
+                                title: Text(
+                                  'Details',
+                                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                                ),
+                                automaticallyImplyLeading: false,
+                                actions: [
+                                  IconButton(
+                                    icon: Icon(Icons.close),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              ),
+                              body: Padding(
+                                padding: const EdgeInsets.all(15.0),
                                 child: Column(
-                                  mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Details', style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
-                                    const SizedBox(height: 10),
-                                    Text('Reservation Date: ${reservationDate.month}/${reservationDate.day}/${reservationDate.year}'),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    // Reservation Date label and value in a box
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Machine/Period:'),
-                                            Text(machineName + ' ' + period),
-                                          ],
-                                        ),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Quantity:'),
-                                            Text(quantity),
-                                          ],
+                                        Text('Reservation Date:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                        const SizedBox(height: 8), // Added gap after label
+                                        Container(
+                                          padding: const EdgeInsets.all(8.0),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.grey),
+                                            borderRadius: BorderRadius.circular(4.0),
+                                          ),
+                                          child: Text(
+                                            '${reservationDate.year}/${reservationDate.month.toString().padLeft(2, '0')}/${reservationDate.day.toString().padLeft(2, '0')} (${reservationDate.day.toString().padLeft(2, '0')})',
+                                          ),
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                                    // Row for labels and their values below them
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text('Unit Price:'),
-                                            Text(unitPrice),
+                                            Expanded(
+                                              child: Text('Machine/Period:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            ),
+                                            Expanded(
+                                              child: Text('Quantity:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            ),
+                                            Expanded(
+                                              child: Text('Unit Price:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            ),
+                                            Expanded(
+                                              child: Text('Number of Days:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            ),
+                                            Expanded(
+                                              child: Text('Amount:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            ),
                                           ],
                                         ),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                        const Divider(thickness: 1, color: Colors.grey), // Single separation line after labels
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text('Number of Days:'),
-                                            Text(numberOfDays.toString()),
+                                            Expanded(child: Text('$machineName $period')),
+                                            Expanded(child: Text(quantity)),
+                                            Expanded(child: Text(unitPrice)),
+                                            Expanded(child: Text(numberOfDays.toString())),
+                                            Expanded(child: Text(amount)),
                                           ],
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Amount:'),
-                                            Text(amount),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 20),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('Close'),
-                                    ),
+                                    const Divider(thickness: 1, color: Colors.grey), // Single separation line after values
                                   ],
                                 ),
                               ),
                             );
                           },
+                          transitionBuilder: (context, animation1, animation2, child) {
+                            return FadeTransition(
+                              opacity: animation1,
+                              child: child,
+                            );
+                          },
                         );
                       },
                       child: Container(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.grey[300],
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.more_horiz,
                           color: Colors.black,
                         ),
