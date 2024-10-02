@@ -62,6 +62,8 @@ class _HomePageState extends State<HomePage> {
               unitPrice: '\$100.00', // Example unit price
               numberOfDays: 3, // Example number of days
               amount: '\$300.00', // Example amount
+              consumptionTax: '\$100.00', // Add consumption tax here
+              total: '\$330.00', // Example total
             ),
             ReservationDialogBox(
               title: '本日返却予定があります。',
@@ -76,6 +78,8 @@ class _HomePageState extends State<HomePage> {
               unitPrice: '\$150.00', // Example unit price
               numberOfDays: 2, // Example number of days
               amount: '\$300.00', // Example amount
+              consumptionTax: '\$100.00', // Add consumption tax here
+              total: '\$330.00', // Example total
             ),
             ReservationDialogBox(
               title: '近日返却予定があります。',
@@ -90,6 +94,8 @@ class _HomePageState extends State<HomePage> {
               unitPrice: '\$200.00', // Example unit price
               numberOfDays: 1, // Example number of days
               amount: '\$200.00', // Example amount
+              consumptionTax: '\$100.00', // Add consumption tax here
+              total: '\$330.00', // Example total
             ),
             ReservationDialogBox(
               title: 'ご利用中',
@@ -104,6 +110,8 @@ class _HomePageState extends State<HomePage> {
               unitPrice: '\$250.00', // Example unit price
               numberOfDays: 4, // Example number of days
               amount: '\$1000.00', // Example amount
+              consumptionTax: '\$100.00', // Add consumption tax here
+              total: '\$330.00', // Example total
             ),
           ],
         );

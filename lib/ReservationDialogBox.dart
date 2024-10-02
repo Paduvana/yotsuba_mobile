@@ -13,6 +13,8 @@ class ReservationDialogBox extends StatelessWidget {
   final String unitPrice;
   final int numberOfDays;
   final String amount;
+  final String consumptionTax; // Add consumption tax parameter
+  final String total; // Add total parameter
 
   const ReservationDialogBox({
     required this.title,
@@ -27,6 +29,8 @@ class ReservationDialogBox extends StatelessWidget {
     required this.unitPrice,
     required this.numberOfDays,
     required this.amount,
+    required this.consumptionTax, // Initialize consumption tax
+    required this.total, // Initialize total
   });
 
   @override
@@ -99,64 +103,92 @@ class ReservationDialogBox extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // Reservation Date label and value in a box
+                                    // Reservation Date label and value without divider
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text('Reservation Date:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                        const SizedBox(height: 8), // Added gap after label
-                                        Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: Colors.grey),
-                                            borderRadius: BorderRadius.circular(4.0),
-                                          ),
-                                          child: Text(
-                                            '${reservationDate.year}/${reservationDate.month.toString().padLeft(2, '0')}/${reservationDate.day.toString().padLeft(2, '0')} (${reservationDate.day.toString().padLeft(2, '0')})',
-                                          ),
-                                        ),
+                                        Text('${reservationDate.month}/${reservationDate.day}/${reservationDate.year}'),
                                       ],
                                     ),
                                     const SizedBox(height: 10),
 
                                     // Row for labels and their values below them
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(
-                                              child: Text('Machine/Period:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                            ),
-                                            Expanded(
-                                              child: Text('Quantity:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                            ),
-                                            Expanded(
-                                              child: Text('Unit Price:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                            ),
-                                            Expanded(
-                                              child: Text('Number of Days:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                            ),
-                                            Expanded(
-                                              child: Text('Amount:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                            ),
-                                          ],
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text('Machine/Period:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              Divider(thickness: 1, color: Colors.grey), // Divider
+                                              Text('$machineName $period'),
+                                            ],
+                                          ),
                                         ),
-                                        const Divider(thickness: 1, color: Colors.grey), // Single separation line after labels
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(child: Text('$machineName $period')),
-                                            Expanded(child: Text(quantity)),
-                                            Expanded(child: Text(unitPrice)),
-                                            Expanded(child: Text(numberOfDays.toString())),
-                                            Expanded(child: Text(amount)),
-                                          ],
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text('Quantity:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              Divider(thickness: 1, color: Colors.grey), // Divider
+                                              Text(quantity),
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text('Unit Price:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              Divider(thickness: 1, color: Colors.grey), // Divider
+                                              Text(unitPrice),
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text('Number of Days:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              Divider(thickness: 1, color: Colors.grey), // Divider
+                                              Text(numberOfDays.toString()),
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text('Amount:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              Divider(thickness: 1, color: Colors.grey), // Divider
+                                              Text(amount),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
-                                    const Divider(thickness: 1, color: Colors.grey), // Single separation line after values
+                                    const SizedBox(height: 10),
+                                    const Divider(thickness: 1, color: Colors.grey), // Divider after values
+
+                                    // Add Consumption Tax and Total
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Consumption Tax:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                        Text(consumptionTax), // Show consumption tax value
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Total (tax included):', style: TextStyle(fontWeight: FontWeight.bold)),
+                                        Text(total), // Show total value
+                                      ],
+                                    ),
                                   ],
                                 ),
                               ),
