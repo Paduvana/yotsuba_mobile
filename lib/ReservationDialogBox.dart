@@ -64,7 +64,7 @@ class ReservationDialogBox extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 5),
-            const Divider(thickness: 1.5, color: Colors.grey),
+            const Divider(thickness: 1.0, color: Colors.grey),
             const SizedBox(height: 5),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -121,8 +121,10 @@ class ReservationDialogBox extends StatelessWidget {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text('Machine/Period:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              Divider(thickness: 1, color: Colors.grey), // Divider
+                                              Text('Machine/Period ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              const SizedBox(height: 5), // Add space before divider
+                                              const Divider(thickness: 1.0, color: Colors.grey), // Divider
+                                              const SizedBox(height: 5), // Add space after divider
                                               Text('$machineName $period'),
                                             ],
                                           ),
@@ -131,8 +133,10 @@ class ReservationDialogBox extends StatelessWidget {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text('Quantity:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              Divider(thickness: 1, color: Colors.grey), // Divider
+                                              Text('Quantity ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              const SizedBox(height: 5), // Add space before divider
+                                              const Divider(thickness: 1.0, color: Colors.grey), // Divider
+                                              const SizedBox(height: 5), // Add space after divider
                                               Text(quantity),
                                             ],
                                           ),
@@ -141,8 +145,10 @@ class ReservationDialogBox extends StatelessWidget {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text('Unit Price:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              Divider(thickness: 1, color: Colors.grey), // Divider
+                                              Text('Unit Price ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              const SizedBox(height: 5), // Add space before divider
+                                              const Divider(thickness: 1.0, color: Colors.grey), // Divider
+                                              const SizedBox(height: 5), // Add space after divider
                                               Text(unitPrice),
                                             ],
                                           ),
@@ -151,8 +157,10 @@ class ReservationDialogBox extends StatelessWidget {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text('Number of Days:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              Divider(thickness: 1, color: Colors.grey), // Divider
+                                              Text('No of Days ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              const SizedBox(height: 5), // Add space before divider
+                                              const Divider(thickness: 1.0, color: Colors.grey), // Divider
+                                              const SizedBox(height: 5), // Add space after divider
                                               Text(numberOfDays.toString()),
                                             ],
                                           ),
@@ -161,8 +169,10 @@ class ReservationDialogBox extends StatelessWidget {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text('Amount:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              Divider(thickness: 1, color: Colors.grey), // Divider
+                                              Text('Amount ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                              const SizedBox(height: 5), // Add space before divider
+                                              const Divider(thickness: 1.0, color: Colors.grey), // Divider
+                                              const SizedBox(height: 5), // Add space after divider
                                               Text(amount),
                                             ],
                                           ),
@@ -170,7 +180,7 @@ class ReservationDialogBox extends StatelessWidget {
                                       ],
                                     ),
                                     const SizedBox(height: 10),
-                                    const Divider(thickness: 1, color: Colors.grey), // Divider after values
+                                    const Divider(thickness: 1.0, color: Colors.grey), // Divider after values
 
                                     // Add Consumption Tax and Total
                                     const SizedBox(height: 10),
