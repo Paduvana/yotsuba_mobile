@@ -4,14 +4,11 @@ import 'BottomNavBar.dart'; // Import the BottomNavBar
 import 'ReservationDialogBox.dart'; // Import the ReservationDialogBox
 
 class HomePage extends StatefulWidget {
-  final items = List<String>.generate(10000, (i) => 'Item $i');
-
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final items = List<String>.generate(10000, (i) => 'Item $i');
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -57,32 +54,56 @@ class _HomePageState extends State<HomePage> {
               reservationNumber: '0000',
               usagePeriod: '0000-00-00 - 0000-00-00',
               quantity: '0',
-              titleColor: Colors.red, // Set title color to orange
+              titleColor: Colors.red, // Set title color to red
               backgroundColor: Colors.red[100]!, // Light red background
+              reservationDate: DateTime.now(), // Example reservation date
+              machineName: 'Machine A', // Example machine name
+              period: '6/1-6/3', // Example period
+              unitPrice: '\$100.00', // Example unit price
+              numberOfDays: 3, // Example number of days
+              amount: '\$300.00', // Example amount
             ),
             ReservationDialogBox(
               title: '本日返却予定があります。',
               reservationNumber: '0000',
               usagePeriod: '0000-00-00 - 0000-00-00',
               quantity: '0',
-              titleColor: Colors.red, // Set title color to orange
+              titleColor: Colors.red, // Set title color to red
               backgroundColor: Colors.white, // Default background
+              reservationDate: DateTime.now(), // Example reservation date
+              machineName: 'Machine B', // Example machine name
+              period: '6/3-6/5', // Example period
+              unitPrice: '\$150.00', // Example unit price
+              numberOfDays: 2, // Example number of days
+              amount: '\$300.00', // Example amount
             ),
             ReservationDialogBox(
               title: '近日返却予定があります。',
               reservationNumber: '0000',
               usagePeriod: '0000-00-00 - 0000-00-00',
-              titleColor: Colors.orange, // Set title color to orange
               quantity: '0',
+              titleColor: Colors.orange, // Set title color to orange
               backgroundColor: Colors.white, // Default background
+              reservationDate: DateTime.now(), // Example reservation date
+              machineName: 'Machine C', // Example machine name
+              period: '6/4-6/5', // Example period
+              unitPrice: '\$200.00', // Example unit price
+              numberOfDays: 1, // Example number of days
+              amount: '\$200.00', // Example amount
             ),
             ReservationDialogBox(
               title: 'ご利用中',
               reservationNumber: '0000',
               usagePeriod: '0000-00-00 - 0000-00-00',
               quantity: '0',
-              titleColor: Colors.greenAccent, // Set title color to orange
+              titleColor: Colors.greenAccent, // Set title color to green
               backgroundColor: Colors.white, // Default background
+              reservationDate: DateTime.now(), // Example reservation date
+              machineName: 'Machine D', // Example machine name
+              period: '6/1-6/5', // Example period
+              unitPrice: '\$250.00', // Example unit price
+              numberOfDays: 4, // Example number of days
+              amount: '\$1000.00', // Example amount
             ),
           ],
         );
