@@ -41,8 +41,13 @@ class _MyHomePageState extends State<MyHomePage> {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
 
+    // Validation to check if username or password is empty
+    if (username.isEmpty || password.isEmpty) {
+      _showErrorDialog('Please enter both username and password.');
+      return;
+    }
     // API endpoint URL
-    const String url = 'http://localhost:8000/api/v1/login/';
+    const String url = 'http://10.0.2.2:8000/api/v1/login/';
 
     try {
       // Making the API call

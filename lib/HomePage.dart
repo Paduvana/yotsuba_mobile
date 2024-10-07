@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'LogoutPage.dart';
+import 'package:http/http.dart' as http; // Import http package
 import 'BottomNavBar.dart'; // Import the BottomNavBar
-import 'ReservationDialogBox.dart'; // Import the ReservationDialogBox
+import 'ReservationItemWidget.dart'; // Import the ReservationItemWidget
 
 class HomePage extends StatefulWidget {
   @override
@@ -10,6 +12,41 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  List<dynamic> _reservations = []; // Store reservations from API
+  bool _isLoading = true; // Show loading indicator
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchReservations(); // Call the API when the page is loaded
+  }
+
+  Future<void> _fetchReservations() async {
+    try {
+      // API endpoint URL
+      final url = Uri.parse('https://http://10.0.2.2:8000/api/v1/');
+
+      // Make the GET request
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        // Parse the response body
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          _reservations = data;
+          _isLoading = false;
+        });
+      } else {
+        throw Exception('Failed to load reservations');
+      }
+    } catch (e) {
+      // Handle errors
+      print('Error fetching reservations: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   void _onItemTapped(int index) {
     if (index == 3) {
@@ -32,97 +69,50 @@ class _HomePageState extends State<HomePage> {
       home: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: Colors.teal, // Background Color
+          backgroundColor: Colors.teal,
           title: const Text(title),
         ),
-        body: _getBodyContent(), // Use the correct body content
+        body: _isLoading ? _buildLoadingIndicator() : _getBodyContent(),
         bottomNavigationBar: BottomNavBar(
           selectedIndex: _selectedIndex,
           onItemTapped: _onItemTapped,
-        ), // Use the new BottomNavBar widget
+        ),
       ),
     );
   }
 
+  Widget _buildLoadingIndicator() {
+    return Center(child: CircularProgressIndicator());
+  }
+
   Widget _getBodyContent() {
-    switch (_selectedIndex) {
-      case 0:
-        return ListView(
-          children: [
-            ReservationDialogBox(
-              title: '返却期限が過ぎてしまいました。',
-              reservationNumber: '0000',
-              usagePeriod: '0000-00-00 - 0000-00-00',
-              quantity: '0',
-              titleColor: Colors.red, // Set title color to red
-              backgroundColor: Colors.red[100]!, // Light red background
-              reservationDate: DateTime.now(), // Example reservation date
-              machineName: 'Machine A', // Example machine name
-              period: '6/1-6/3', // Example period
-              unitPrice: '\$100.00', // Example unit price
-              numberOfDays: 3, // Example number of days
-              amount: '\$300.00', // Example amount
-              consumptionTax: '\$100.00', // Add consumption tax here
-              total: '\$330.00', // Example total
-            ),
-            ReservationDialogBox(
-              title: '本日返却予定があります。',
-              reservationNumber: '0000',
-              usagePeriod: '0000-00-00 - 0000-00-00',
-              quantity: '0',
-              titleColor: Colors.red, // Set title color to red
-              backgroundColor: Colors.white, // Default background
-              reservationDate: DateTime.now(), // Example reservation date
-              machineName: 'Machine B', // Example machine name
-              period: '6/3-6/5', // Example period
-              unitPrice: '\$150.00', // Example unit price
-              numberOfDays: 2, // Example number of days
-              amount: '\$300.00', // Example amount
-              consumptionTax: '\$100.00', // Add consumption tax here
-              total: '\$330.00', // Example total
-            ),
-            ReservationDialogBox(
-              title: '近日返却予定があります。',
-              reservationNumber: '0000',
-              usagePeriod: '0000-00-00 - 0000-00-00',
-              quantity: '0',
-              titleColor: Colors.orange, // Set title color to orange
-              backgroundColor: Colors.white, // Default background
-              reservationDate: DateTime.now(), // Example reservation date
-              machineName: 'Machine C', // Example machine name
-              period: '6/4-6/5', // Example period
-              unitPrice: '\$200.00', // Example unit price
-              numberOfDays: 1, // Example number of days
-              amount: '\$200.00', // Example amount
-              consumptionTax: '\$100.00', // Add consumption tax here
-              total: '\$330.00', // Example total
-            ),
-            ReservationDialogBox(
-              title: 'ご利用中',
-              reservationNumber: '0000',
-              usagePeriod: '0000-00-00 - 0000-00-00',
-              quantity: '0',
-              titleColor: Colors.greenAccent, // Set title color to green
-              backgroundColor: Colors.white, // Default background
-              reservationDate: DateTime.now(), // Example reservation date
-              machineName: 'Machine D', // Example machine name
-              period: '6/1-6/5', // Example period
-              unitPrice: '\$250.00', // Example unit price
-              numberOfDays: 4, // Example number of days
-              amount: '\$1000.00', // Example amount
-              consumptionTax: '\$100.00', // Add consumption tax here
-              total: '\$330.00', // Example total
-            ),
-          ],
-        );
-      case 1:
-        return Center(child: Text('New Reservation Screen', style: TextStyle(fontSize: 24)));
-      case 2:
-        return Center(child: Text('Reservation Confirmed Screen', style: TextStyle(fontSize: 24)));
-      case 3:
-        return Center(child: Text('Settings Screen', style: TextStyle(fontSize: 24)));
-      default:
-        return Container(); // Fallback for safety
+    if (_selectedIndex == 0) {
+      return ListView.builder(
+        itemCount: _reservations.length,
+        itemBuilder: (context, index) {
+          var reservation = _reservations[index];
+          return ReservationItemWidget(
+            title: reservation['title'],
+            reservationNumber: reservation['reservationNumber'],
+            usagePeriod: reservation['usagePeriod'],
+            quantity: reservation['quantity'],
+            titleColor: reservation['titleColor'] == 'red' ? Colors.red : Colors.green,
+            backgroundColor: Colors.white,
+            reservationDate: DateTime.parse(reservation['reservationDate']),
+            machineName: reservation['machineName'],
+            period: reservation['period'],
+            unitPrice: '\$${reservation['unitPrice']}',
+            numberOfDays: reservation['numberOfDays'],
+            amount: '\$${reservation['amount']}',
+            consumptionTax: '\$${reservation['consumptionTax']}',
+            total: '\$${reservation['total']}',
+          );
+        },
+      );
+    } else {
+      return Center(
+        child: Text('Other Screens Placeholder', style: TextStyle(fontSize: 24)),
+      );
     }
   }
 }
