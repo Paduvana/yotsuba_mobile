@@ -2,10 +2,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'BottomNavBar.dart';  // Import the BottomNavBar widget
-import 'HomePage.dart';
-import 'main.dart'; // Import main.dart to navigate to MyHomePage
+import 'HomePage.dart';  // Import HomePage for navigation
+import 'main.dart';  // Import main.dart to navigate to MyHomePage
 
 class LogoutPage extends StatefulWidget {
+  final String accessToken; // Accept the access token as a parameter
+
+  const LogoutPage({Key? key, required this.accessToken}) : super(key: key); // Constructor
+
   @override
   _LogoutPageState createState() => _LogoutPageState();
 }
@@ -19,32 +23,8 @@ class _LogoutPageState extends State<LogoutPage> {
   int _selectedIndex = 0; // Track the selected index for BottomNavBar
 
   // Function to pick an image
-  Future<void> _pickImage() async {
-    final pickedFile = await showDialog<XFile>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Choose Image Source'),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                final pickedFile = await picker.pickImage(source: ImageSource.camera);
-                Navigator.of(context).pop(pickedFile);
-              },
-              child: const Text('Camera'),
-            ),
-            TextButton(
-              onPressed: () async {
-                final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-                Navigator.of(context).pop(pickedFile);
-              },
-              child: const Text('Gallery'),
-            ),
-          ],
-        );
-      },
-    );
-
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
@@ -57,18 +37,20 @@ class _LogoutPageState extends State<LogoutPage> {
     setState(() {
       _selectedIndex = index; // Update the selected index
     });
+
     // Handle navigation logic based on index
     switch (index) {
       case 0:
-      // Navigate to HomePage when Top button is clicked
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()), // Navigate to HomePage
+          MaterialPageRoute(builder: (context) => HomePage(accessToken: widget.accessToken)), // Pass token to HomePage
         );
         break;
       case 1:
+      // Implement navigation for other tabs if applicable
         break;
       case 2:
+      // Implement navigation for other tabs if applicable
         break;
     }
   }
@@ -78,7 +60,7 @@ class _LogoutPageState extends State<LogoutPage> {
     return Scaffold(
       backgroundColor: Colors.white, // Set the background color to white
       appBar: AppBar(
-        title: const Text('設定'),
+        title: const Text('設定'), // Title of the page
         centerTitle: true,
         backgroundColor: Colors.teal,
       ),
@@ -91,7 +73,7 @@ class _LogoutPageState extends State<LogoutPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 GestureDetector(
-                  onTap: _pickImage,
+                  onTap: () => _showImageSourceDialog(), // Show dialog to choose image source
                   child: CircleAvatar(
                     radius: 35,
                     backgroundImage: _image != null ? FileImage(_image!) : null,
@@ -105,7 +87,7 @@ class _LogoutPageState extends State<LogoutPage> {
                   width: 295,
                   height: 90,
                   child: ElevatedButton(
-                    onPressed: _pickImage,
+                    onPressed: _showImageSourceDialog, // Show dialog to choose image source
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(0),
@@ -137,41 +119,7 @@ class _LogoutPageState extends State<LogoutPage> {
             }, obscureText: true),
             const SizedBox(height: 60),
             ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      contentPadding: const EdgeInsets.all(20),
-                      content: const SizedBox(
-                        width: 400,
-                        height: 100,
-                        child: Center(
-                          child: Text(
-                            "更新されました",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      ),
-                      actions: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: TextButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text("OK"),
-                          ),
-                        )
-                      ],
-                    );
-                  },
-                );
-              },
+              onPressed: _updateUserInfo, // Call the update function
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal,
                 foregroundColor: Colors.white,
@@ -187,7 +135,8 @@ class _LogoutPageState extends State<LogoutPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => MyHomePage(title: 'Yotsuba')),
-                );              },
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
               ),
@@ -207,6 +156,73 @@ class _LogoutPageState extends State<LogoutPage> {
         selectedIndex: _selectedIndex, // Pass the selected index
         onItemTapped: _onItemTapped, // Pass the callback function
       ),
+    );
+  }
+
+  // Function to show image source dialog
+  void _showImageSourceDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Choose Image Source'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                _pickImage(ImageSource.camera); // Pick image from camera
+                Navigator.of(context).pop();
+              },
+              child: const Text('Camera'),
+            ),
+            TextButton(
+              onPressed: () {
+                _pickImage(ImageSource.gallery); // Pick image from gallery
+                Navigator.of(context).pop();
+              },
+              child: const Text('Gallery'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Function to update user information
+  void _updateUserInfo() {
+    // Here you would typically send the data to an API or local storage.
+    // For now, just showing a confirmation dialog.
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: const EdgeInsets.all(20),
+          content: const SizedBox(
+            width: 400,
+            height: 100,
+            child: Center(
+              child: Text(
+                "更新されました",
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+          ),
+          actions: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text("OK"),
+              ),
+            )
+          ],
+        );
+      },
     );
   }
 

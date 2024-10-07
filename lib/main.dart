@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:yotsuba_mobile/HomePage.dart';
+import 'package:yotsuba_mobile/HomePage.dart'; // Import the HomePage
 
 void main() {
   runApp(const MyApp());
@@ -35,26 +35,30 @@ class _MyHomePageState extends State<MyHomePage> {
   // Controllers for text input
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false; // To show loading indicator
 
   // Function to make API call for login
   Future<void> _login() async {
     final String username = _usernameController.text;
     final String password = _passwordController.text;
 
-    // Validation to check if username or password is empty
+    // Check if username or password is empty
     if (username.isEmpty || password.isEmpty) {
       _showErrorDialog('Please enter both username and password.');
       return;
     }
-    // API endpoint URL
+
     const String url = 'http://10.0.2.2:8000/api/v1/login/';
 
+    setState(() {
+      _isLoading = true; // Show loading indicator when starting API call
+    });
+
     try {
-      // Making the API call
       final response = await http.post(
         Uri.parse(url),
         headers: <String, String>{
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
           'email': username,
@@ -62,27 +66,46 @@ class _MyHomePageState extends State<MyHomePage> {
         }),
       );
 
-      // Check the response status code
-      if (response.statusCode == 200) {
-        // Parse the response body
-        final data = jsonDecode(response.body);
+      // Ensure the response body is properly decoded using UTF-8
+      final decodedBody = utf8.decode(response.bodyBytes);
+      final data = jsonDecode(decodedBody);
 
-        // Assuming the response has a token or success message
-        print('Login successful: $data');
-        
-        // Navigate to the HomePage if login is successful
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+      print('Response body decoded: $decodedBody');
+
+// Inside your _login method
+      if (response.statusCode == 200) {
+        final decodedBody = utf8.decode(response.bodyBytes);
+        final data = jsonDecode(decodedBody);
+
+        // Debugging: Print the entire response data
+        print('Response data: $data');
+
+        // Check if tokens are present
+        final String? accessToken = data['access_token'];
+        final String? refreshToken = data['refresh_token'];
+
+        if (accessToken != null && refreshToken != null) {
+          // Navigate to HomePage with the accessToken
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePage(accessToken: accessToken),
+            ),
+          );
+        } else {
+          // Tokens are missing, show error
+          _showErrorDialog('Failed to retrieve authentication tokens.');
+        }
       } else {
-        // Show an error message if login failed
-        print('Failed to login: ${response.body}');
         _showErrorDialog('Login failed. Please check your credentials.');
       }
     } catch (e) {
       print('Error: $e');
       _showErrorDialog('An error occurred during login.');
+    } finally {
+      setState(() {
+        _isLoading = false; // Stop loading indicator after the API call
+      });
     }
   }
 
@@ -113,73 +136,76 @@ class _MyHomePageState extends State<MyHomePage> {
         textStyle: const TextStyle(fontSize: 20),
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white);
+
     return Scaffold(
         body: DecoratedBox(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-            image: AssetImage("asset/images/login_banner.png"),
-            fit: BoxFit.cover),
-      ),
-      child: Center(
-        child: Container(
-          padding: const EdgeInsets.all(50.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10.0),
-                height: 350,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 5.0,
-                  ),
-                  borderRadius: BorderRadius.circular(10.0), // Uniform radius
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'レンタルシステム',
-                      style: Theme.of(context).textTheme.displaySmall,
-                    ),
-                    const Text(
-                      'ログインID/Passを入力してください',
-                    ),
-                    TextFormField(
-                      controller: _usernameController,
-                      decoration: const InputDecoration(
-                        hintText: 'ID',
-                      ),
-                    ),
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: const InputDecoration(
-                        hintText: 'Pass',
-                      ),
-                      obscureText: true,
-                    ),
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    ElevatedButton(
-                      onPressed: _login, // Trigger the API call on login
-                      style: style,
-                      child: const Text(
-                        'Sign In',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                  padding: const EdgeInsets.all(30.0),
-                  child: Image.asset('asset/images/logo.png'))
-            ],
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage("asset/images/login_banner.png"),
+                fit: BoxFit.cover),
           ),
-        ),
-      ),
-    ));
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.all(50.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
+                    height: 350,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 5.0,
+                      ),
+                      borderRadius: BorderRadius.circular(10.0), // Uniform radius
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'レンタルシステム',
+                          style: Theme.of(context).textTheme.displaySmall,
+                        ),
+                        const Text(
+                          'ログインID/Passを入力してください',
+                        ),
+                        TextFormField(
+                          controller: _usernameController,
+                          decoration: const InputDecoration(
+                            hintText: 'ID',
+                          ),
+                        ),
+                        TextFormField(
+                          controller: _passwordController,
+                          decoration: const InputDecoration(
+                            hintText: 'Pass',
+                          ),
+                          obscureText: true,
+                        ),
+                        const SizedBox(
+                          height: 24,
+                        ),
+                        _isLoading
+                            ? const CircularProgressIndicator() // Show loading indicator
+                            : ElevatedButton(
+                          onPressed: _login, // Trigger the API call on login
+                          style: style,
+                          child: const Text(
+                            'Sign In',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Image.asset('asset/images/logo.png'))
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 }
