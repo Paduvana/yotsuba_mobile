@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
 
-    const String url = 'http://10.0.2.2:8000/api/v1/login/';
+    const String url = 'https://yotsuba-gpdo.onrender.com/api/v1/login/';
 
     setState(() {
       _isLoading = true; // Show loading indicator when starting API call

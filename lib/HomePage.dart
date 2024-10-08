@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _fetchDashboardData() async {
     try {
-      final url = Uri.parse('http://10.0.2.2:8000/api/v1/dashboard/'); // Updated to use emulator IP
+      final url = Uri.parse('https://yotsuba-gpdo.onrender.com/api/v1/dashboard/'); // Updated to use emulator IP
       final response = await http.get(
         url,
         headers: {
@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
       } else {
         setState(() {
           _isDashboardLoading = false;
+          print(response.body);
           _errorMessage = 'Failed to load dashboard data. Please try again.'; // Set error message
         });
       }
@@ -116,10 +117,10 @@ class _HomePageState extends State<HomePage> {
     if (_selectedIndex == 0) {
       return ListView(
         children: [
-          _buildDashboardSection('Overdue Reservations', _dashboardData['overdue_reservation'], Colors.red),
-          _buildDashboardSection('Due Today Reservations', _dashboardData['due_today_reservation'], Colors.orange),
-          _buildDashboardSection('Due Soon Reservations', _dashboardData['due_soon_reservation'], Colors.blue),
-          _buildDashboardSection('In Use Reservations', _dashboardData['in_use_reservation'], Colors.green),
+          _buildDashboardSection('返却期限が過ぎています。', _dashboardData['overdue_reservation'], Colors.red),
+          _buildDashboardSection('本日返却予定があります。', _dashboardData['due_today_reservation'], Colors.orange),
+          _buildDashboardSection('近日返却予定があります', _dashboardData['due_soon_reservation'], Colors.blue),
+          _buildDashboardSection('ご利用中', _dashboardData['in_use_reservation'], Colors.green),
         ],
       );
     } else {
