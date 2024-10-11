@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:yotsuba_mobile/HomePage.dart'; // Import the HomePage
-import 'AuthService.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -37,6 +37,9 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false; // To show loading indicator
 
+  // Define the API URL
+  final String url = 'https://yotsuba-gpdo.onrender.com/api/v1/login/';
+
   // Function to make API call for login
   Future<void> _login() async {
     final String username = _usernameController.text;
@@ -47,8 +50,6 @@ class _MyHomePageState extends State<MyHomePage> {
       _showErrorDialog('Please enter both username and password.');
       return;
     }
-
-    const String url = 'https://yotsuba-gpdo.onrender.com/api/v1/login/';
 
     setState(() {
       _isLoading = true; // Show loading indicator when starting API call
@@ -66,16 +67,9 @@ class _MyHomePageState extends State<MyHomePage> {
         }),
       );
 
-      // Ensure the response body is properly decoded using UTF-8
-      final decodedBody = utf8.decode(response.bodyBytes);
-      final data = jsonDecode(decodedBody);
-
-      print('Response body decoded: $decodedBody');
-
-// Inside your _login method
+      // Check the response status
       if (response.statusCode == 200) {
-        final decodedBody = utf8.decode(response.bodyBytes);
-        final data = jsonDecode(decodedBody);
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
 
         // Debugging: Print the entire response data
         print('Response data: $data');
@@ -84,10 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
         final String? accessToken = data['access_token'];
         final String? refreshToken = data['refresh_token'];
 
-        if (accessToken != null && refreshToken != null)
-        {
-          await AuthService().storeToken(accessToken);
-
+        if (accessToken != null && refreshToken != null) {
           // Navigate to HomePage with the accessToken
           Navigator.pushReplacement(
             context,
