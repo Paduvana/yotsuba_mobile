@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _fetchDashboardData() async {
     try {
       final String? accessToken = await AuthService().getToken();
-      final url = Uri.parse('http://127.0.0.1/api/v1/dashboard/'); // Updated to use emulator IP
+      final url = Uri.parse('http://127.0.0.1:8000/api/v1/dashboard/'); // Updated to use emulator IP
       final response = await http.get(
         url,
         headers: {
