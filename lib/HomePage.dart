@@ -4,11 +4,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert'; // Import for JSON handling
 import 'BottomNavBar.dart'; // Import the BottomNavBar
 import 'ReservationItemWidget.dart'; // Import the ReservationItemWidget
-import 'AuthService.dart';
+import 'AuthService.dart'; // Re-add AuthService to fetch token
 
 class HomePage extends StatefulWidget {
-  final String accessToken; // Pass the access token from login
-
+  final String accessToken; // Add this line to define the accessToken
+  // Constructor to accept the accessToken
   const HomePage({Key? key, required this.accessToken}) : super(key: key);
 
   @override
@@ -20,21 +20,43 @@ class _HomePageState extends State<HomePage> {
   Map<String, dynamic> _dashboardData = {}; // Store dashboard data
   bool _isDashboardLoading = true; // Show loading indicator for dashboard data
   String? _errorMessage; // Store any error messages
+  String? _accessToken; // Store access token
 
   @override
   void initState() {
     super.initState();
-    _fetchDashboardData(); // Fetch dashboard data when page is loaded
+    _fetchDashboardData(widget.accessToken);  // Fetch token and data
   }
 
-  Future<void> _fetchDashboardData() async {
+  Future<void> _loadTokenAndFetchData() async {
     try {
-      final String? accessToken = await AuthService().getToken();
-      final url = Uri.parse('http://127.0.0.1:8000/api/v1/dashboard/'); // Updated to use emulator IP
+      final token = await AuthService().getToken(); // Fetch the token
+      if (token != null) {
+        setState(() {
+          _accessToken = token;
+        });
+        _fetchDashboardData(token); // Fetch dashboard data with token
+      } else {
+        setState(() {
+          _errorMessage = 'No access token found';
+          _isDashboardLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error retrieving token';
+        _isDashboardLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchDashboardData(String token) async {
+    try {
+      final url = Uri.parse('http://127.0.0.1:8000/api/v1/dashboard/');
       final response = await http.get(
         url,
         headers: {
-          'Authorization': 'Bearer $accessToken',
+          'Authorization': 'Bearer $token',
         },
       );
 
@@ -66,7 +88,7 @@ class _HomePageState extends State<HomePage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => LogoutPage(accessToken: widget.accessToken),
+          builder: (context) => LogoutPage(accessToken: _accessToken ?? ''),
         ),
       );
     } else {
