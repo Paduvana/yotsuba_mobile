@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'LogoutPage.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert'; // Import for JSON handling
-import 'BottomNavBar.dart'; // Import the BottomNavBar
-import 'ReservationItemWidget.dart'; // Import the ReservationItemWidget
-import 'AuthService.dart'; // Re-add AuthService to fetch token
+import 'dart:convert';
+import 'LogoutPage.dart';
+import 'AuthService.dart'; // Import AuthService for token handling
+import 'BottomNavBar.dart';
+import 'ReservationItemWidget.dart';
 
 class HomePage extends StatefulWidget {
-  final String accessToken; // Add this line to define the accessToken
-  // Constructor to accept the accessToken
+  final String accessToken; // AccessToken as a field
+
   const HomePage({Key? key, required this.accessToken}) : super(key: key);
 
   @override
@@ -17,79 +17,65 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  Map<String, dynamic> _dashboardData = {}; // Store dashboard data
-  bool _isDashboardLoading = true; // Show loading indicator for dashboard data
-  String? _errorMessage; // Store any error messages
-  String? _accessToken; // Store access token
+  Map<String, dynamic> _dashboardData = {};
+  bool _isDashboardLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _fetchDashboardData(widget.accessToken);  // Fetch token and data
+    _loadTokenAndFetchData(); // Fetch token and then data
   }
 
   Future<void> _loadTokenAndFetchData() async {
     try {
-      final token = await AuthService().getToken(); // Fetch the token
+      final token = await AuthService().getToken(); // Use AuthService to retrieve token
       if (token != null) {
-        setState(() {
-          _accessToken = token;
-        });
-        _fetchDashboardData(token); // Fetch dashboard data with token
+        await _fetchDashboardData(token); // Fetch data with token
       } else {
-        setState(() {
-          _errorMessage = 'No access token found';
-          _isDashboardLoading = false;
-        });
+        _setError('No access token found');
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Error retrieving token';
-        _isDashboardLoading = false;
-      });
+      _setError('Error retrieving token: $e');
     }
   }
 
   Future<void> _fetchDashboardData(String token) async {
+    setState(() {
+      _isDashboardLoading = true; // Show loading indicator
+    });
+
     try {
       final url = Uri.parse('http://127.0.0.1:8000/api/v1/dashboard/');
-      final response = await http.get(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
+      final response = await http.get(url, headers: {'Authorization': 'Bearer $token'});
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
+        final data = jsonDecode(response.body);
         setState(() {
           _dashboardData = data;
           _isDashboardLoading = false;
-          _errorMessage = null; // Clear any previous error messages
+          _errorMessage = null;
         });
       } else {
-        setState(() {
-          _isDashboardLoading = false;
-          _errorMessage = 'Failed to load dashboard data. Please try again.'; // Set error message
-        });
+        _setError('Failed to load dashboard data. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching dashboard data: $e');
-      setState(() {
-        _isDashboardLoading = false;
-        _errorMessage = 'An error occurred while fetching data. Please check your connection.'; // Set error message
-      });
+      _setError('An error occurred while fetching data: $e');
     }
+  }
+
+  void _setError(String message) {
+    setState(() {
+      _isDashboardLoading = false;
+      _errorMessage = message;
+    });
   }
 
   void _onItemTapped(int index) {
     if (index == 3) {
-      // Navigate to LogoutPage and pass the access token
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => LogoutPage(accessToken: _accessToken ?? ''),
-        ),
+        MaterialPageRoute(builder: (context) => LogoutPage(accessToken: widget.accessToken)),
       );
     } else {
       setState(() {
@@ -110,7 +96,7 @@ class _HomePageState extends State<HomePage> {
       body: _isDashboardLoading
           ? _buildLoadingIndicator()
           : _errorMessage != null
-          ? _buildErrorIndicator(_errorMessage!) // Show error if present
+          ? _buildErrorIndicator(_errorMessage!)
           : _getBodyContent(),
       bottomNavigationBar: BottomNavBar(
         selectedIndex: _selectedIndex,
@@ -120,7 +106,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildLoadingIndicator() {
-    return Center(child: CircularProgressIndicator());
+    return const Center(child: CircularProgressIndicator());
   }
 
   Widget _buildErrorIndicator(String message) {
@@ -129,7 +115,7 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(16.0),
         child: Text(
           message,
-          style: TextStyle(fontSize: 18, color: Colors.red),
+          style: const TextStyle(fontSize: 18, color: Colors.red),
           textAlign: TextAlign.center,
         ),
       ),
@@ -137,66 +123,54 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _getBodyContent() {
-    if (_selectedIndex == 0) {
-      return ListView(
-        children: [
-          _buildDashboardSection('Overdue Reservations', _dashboardData['overdue_reservation'], Colors.red),
-          _buildDashboardSection('Due Today Reservations', _dashboardData['due_today_reservation'], Colors.orange),
-          _buildDashboardSection('Due Soon Reservations', _dashboardData['due_soon_reservation'], Colors.blue),
-          _buildDashboardSection('In Use Reservations', _dashboardData['in_use_reservation'], Colors.green),
-        ],
-      );
-    } else {
-      return Center(
-        child: Text('Other Screens Placeholder', style: TextStyle(fontSize: 24)),
-      );
-    }
-  }
-
-  Widget _buildDashboardSection(String title, List<dynamic>? reservations, Color color) {
-    if (reservations == null || reservations.isEmpty) {
-      return Container(); // No reservations to show
-    }
-
-    return Card(
-      margin: const EdgeInsets.all(16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    switch (_selectedIndex) {
+      case 0:
+        return ListView(
           children: [
-            Text(
-              title,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color),
+            ReservationItemWidget(
+              title: '返却期限が過ぎてしまいました。',
+              reservationNumber: '0000',
+              usagePeriod: '2024-10-01 - 2024-10-03',
+              quantity: '1',
+              titleColor: Colors.red,
+              backgroundColor: Colors.red[100]!,
             ),
-            const SizedBox(height: 10),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: reservations.length,
-              itemBuilder: (context, index) {
-                var reservation = reservations[index];
-                return ReservationItemWidget(
-                  title: reservation['device_name'], // Use the device name as title
-                  reservationNumber: reservation['bill_number'], // Bill number as reservation number
-                  usagePeriod: '${reservation['start_date']} - ${reservation['end_date']}', // Start-End date
-                  quantity: reservation['quantity'].toString(), // Quantity
-                  titleColor: color, // Set color based on status
-                  backgroundColor: Colors.white,
-                  reservationDate: DateTime.parse(reservation['reserve_date']), // Reservation date
-                  machineName: reservation['device_name'], // Machine name
-                  period: '${reservation['start_date']} - ${reservation['end_date']}', // Period
-                  unitPrice: '\$${reservation['unit_price']}', // Unit price
-                  numberOfDays: reservation['duration'], // Duration in days
-                  amount: '\$${reservation['sub_total']}', // Subtotal amount
-                  consumptionTax: '\$${reservation['tax']}', // Tax
-                  total: '\$${reservation['price']}', // Total amount
-                );
-              },
+
+            ReservationItemWidget(
+              title: '本日返却予定があります。',
+              reservationNumber: '0001',
+              usagePeriod: '2024-10-03 - 2024-10-05',
+              quantity: '2',
+              titleColor: Colors.orange,
+              backgroundColor: Colors.white,
+            ),
+            ReservationItemWidget(
+              title: '近日返却予定があります。',
+              reservationNumber: '0002',
+              usagePeriod: '2024-10-05 - 2024-10-06',
+              quantity: '3',
+              titleColor: Colors.blue,
+              backgroundColor: Colors.white,
+            ),
+            ReservationItemWidget(
+              title: 'ご利用中',
+              reservationNumber: '0003',
+              usagePeriod: '2024-10-01 - 2024-10-06',
+              quantity: '4',
+              titleColor: Colors.green,
+              backgroundColor: Colors.white,
+
             ),
           ],
-        ),
-      ),
-    );
+        );
+      case 1:
+        return const Center(child: Text('New Reservation Screen', style: TextStyle(fontSize: 24)));
+      case 2:
+        return const Center(child: Text('Reservation Confirmed Screen', style: TextStyle(fontSize: 24)));
+      case 3:
+        return const Center(child: Text('Settings Screen', style: TextStyle(fontSize: 24)));
+      default:
+        return Container();
+    }
   }
 }
