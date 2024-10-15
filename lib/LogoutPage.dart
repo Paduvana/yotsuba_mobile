@@ -2,13 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'BottomNavBar.dart';  // Import the BottomNavBar widget
-import 'HomePage.dart';  // Import HomePage for navigation
+import 'Dashboard.dart';  // Import HomePage for navigation
 import 'main.dart';  // Import main.dart to navigate to MyHomePage
 
 class LogoutPage extends StatefulWidget {
-  final String accessToken; // Accept the access token as a parameter
 
-  const LogoutPage({Key? key, required this.accessToken}) : super(key: key); // Constructor
+  const LogoutPage({Key? key}) : super(key: key); // Constructor
 
   @override
   _LogoutPageState createState() => _LogoutPageState();
@@ -43,7 +42,7 @@ class _LogoutPageState extends State<LogoutPage> {
       case 0:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage(accessToken: widget.accessToken)), // Pass token to HomePage
+          MaterialPageRoute(builder: (context) => const Dashboard()), // Pass token to HomePage
         );
         break;
       case 1:
@@ -134,7 +133,7 @@ class _LogoutPageState extends State<LogoutPage> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => MyHomePage(title: 'Yotsuba')),
+                  MaterialPageRoute(builder: (context) => const Dashboard()),
                 );
               },
               style: ElevatedButton.styleFrom(

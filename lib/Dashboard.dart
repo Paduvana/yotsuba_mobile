@@ -6,16 +6,15 @@ import 'AuthService.dart'; // Import AuthService for token handling
 import 'BottomNavBar.dart';
 import 'ReservationItemWidget.dart';
 
-class HomePage extends StatefulWidget {
-  final String accessToken; // AccessToken as a field
+class Dashboard extends StatefulWidget {
 
-  const HomePage({Key? key, required this.accessToken}) : super(key: key);
+  const Dashboard({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _DashboardState createState() => _DashboardState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
   Map<String, dynamic> _dashboardData = {};
   bool _isDashboardLoading = true;
@@ -75,7 +74,7 @@ class _HomePageState extends State<HomePage> {
     if (index == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => LogoutPage(accessToken: widget.accessToken)),
+        MaterialPageRoute(builder: (context) => const LogoutPage()),
       );
     } else {
       setState(() {
