@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
+import 'package:yotsuba_mobile/widgets/CustomAppBar.dart';
 
 class Reservation {
   final String reservationNo;
@@ -40,11 +41,7 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('予約確認'),
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-      ),
+      appBar: const CustomAppBar(title: '予約確認',hideBackButton: true),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:yotsuba_mobile/screens/Dashboard.dart';
+import 'package:yotsuba_mobile/widgets/CustomAppBar.dart';
 import '../widgets/BottomNavBar.dart';  // Import the BottomNavBar widget
 
 class UserProfile extends StatefulWidget {
@@ -33,11 +34,7 @@ class _UserProfileState extends State<UserProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white, // Set the background color to white
-      appBar: AppBar(
-        title: const Text('設定'), // Title of the page
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-      ),
+      appBar: const CustomAppBar(title: '設定',hideBackButton: true),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

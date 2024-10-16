@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/models/reservation_model.dart'; // Import the ReservationModel
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
+import 'package:yotsuba_mobile/widgets/CustomAppBar.dart';
 import 'package:yotsuba_mobile/widgets/ReservationItemWidget.dart';
 import 'package:yotsuba_mobile/services/DashboardService.dart';
 
@@ -51,11 +52,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-        title: const Text('ダッシュボード'),
-      ),
+      appBar: const CustomAppBar(title: 'ダッシュボード',hideBackButton: true,),
       body: _isDashboardLoading
           ? _buildLoadingIndicator()
           : _errorMessage != null
@@ -105,7 +102,6 @@ class _DashboardState extends State<Dashboard> {
   }
   
   return reservations.map<Widget>((reservation) {
-    print(reservation);
     return ReservationItemWidget(
       title: mapping['name'],
       reservationNumber: reservation['id'],
