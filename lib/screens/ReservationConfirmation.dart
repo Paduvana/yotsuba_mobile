@@ -23,6 +23,7 @@ class ReservationConfirmation extends StatefulWidget {
 class _ReservationConfirmationState extends State<ReservationConfirmation> {
   bool showCurrent = true; // Toggle between Current and Past reservations
   int _selectedIndex = 2; // Start with "予約確認済み" tab selected
+  List<bool> isSelected = [true, false]; // For ToggleButtons
 
   final List<Reservation> currentReservations = [
     Reservation(reservationNo: '123456', usagePeriod: '01/01/2024 - 01/07/2024', quantity: 5),
@@ -42,6 +43,7 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('予約確認'),
+        foregroundColor: Colors.white,
         centerTitle: true,
         backgroundColor: Colors.teal,
       ),
@@ -49,34 +51,31 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        showCurrent = true;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: showCurrent ? Colors.teal : Colors.grey,
-                    ),
-                    child: const Text('Current Reservation'),
-                  ),
+            // Toggle Button for Current and Past Reservations
+            ToggleButtons(
+              isSelected: isSelected,
+              onPressed: (int index) {
+                setState(() {
+                  for (int i = 0; i < isSelected.length; i++) {
+                    isSelected[i] = i == index;
+                  }
+                  showCurrent = index == 0;
+                });
+              },
+              color: Colors.green,
+              selectedColor: Colors.white,
+              fillColor: Colors.green,
+              borderRadius: BorderRadius.circular(10),
+              borderColor: Colors.green.shade900,
+              selectedBorderColor: Colors.green.shade900,
+              children: const [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text('Current Reservation'),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        showCurrent = false;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: !showCurrent ? Colors.teal : Colors.grey,
-                    ),
-                    child: const Text('Past Reservation'),
-                  ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text('Past Reservation'),
                 ),
               ],
             ),
@@ -115,7 +114,9 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 1),
+            Divider(thickness: 1, color: Colors.black), // Add this line to create a divider
+            const SizedBox(height: 1),
 
             // List of Reservations
             Expanded(
@@ -132,12 +133,21 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
                         Expanded(flex: 1, child: Text(reservation.quantity.toString())),
                         Expanded(
                           flex: 1,
+                          child: Container(
+                            width: 30, // Set the width to a smaller value
+                            height: 40, // Set the height to a smaller value
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white54,
+                              border: Border.all(color: Colors.black, width: 2),
+                            ),
                           child: IconButton(
                             icon: const Icon(Icons.more_horiz),
                             onPressed: () {
                               // Handle button press for reservation details
                             },
                           ),
+                        ),
                         ),
                       ],
                     ),
