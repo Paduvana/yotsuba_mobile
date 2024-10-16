@@ -5,7 +5,7 @@ import 'package:yotsuba_mobile/services/AuthService.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final token = await AuthService().getToken();
+  final token = await AuthService().getAccessToken();
   runApp(MyApp(initialRoute: token != null ? '/home' : '/'));
 }
 

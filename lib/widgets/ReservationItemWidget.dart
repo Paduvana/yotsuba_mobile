@@ -18,7 +18,7 @@ class ReservationItemWidget extends StatelessWidget {
   final String total;
 
   const ReservationItemWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.reservationNumber,
     required this.usagePeriod,
@@ -33,7 +33,7 @@ class ReservationItemWidget extends StatelessWidget {
     required this.amount,
     required this.consumptionTax,
     required this.total,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,59 +50,34 @@ class ReservationItemWidget extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(color: titleColor, fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: titleColor, fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8.0),
           Table(
             columnWidths: const {
-              0: FlexColumnWidth(2),
-              1: FlexColumnWidth(3),
-              2: FlexColumnWidth(1),
-              3: FlexColumnWidth(1),
+              0: FlexColumnWidth(2), // More space for reservation number
+              1: FlexColumnWidth(3), // More space for usage period
+              2: FlexColumnWidth(1), // Less space for quantity
+              3: FlexColumnWidth(1), // Space for the button
             },
             children: [
+              // Header Row
               TableRow(
                 children: [
-                  _buildTableCell('予約No.', reservationNumber),
-                  _buildTableCell('利用期間', _formatUsagePeriod(usagePeriod)),
-                  _buildTableCell('数量', quantity),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.black, width: 2.0),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.more_horiz),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return ReservationDialogBox(
-                                  title: title,
-                                  reservationNumber: reservationNumber,
-                                  usagePeriod: usagePeriod,
-                                  quantity: quantity,
-                                  amount: amount,
-                                  consumptionTax: consumptionTax,
-                                  backgroundColor: backgroundColor,
-                                  machineName: machineName,
-                                  numberOfDays: numberOfDays,
-                                  period: period,
-                                  reservationDate: reservationDate,
-                                  total: total,
-                                  unitPrice: unitPrice,
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
+                  _buildHeaderCell('予約No.'),
+                  _buildHeaderCell('利用期間'),
+                  _buildHeaderCell('数量'),
+                  _buildHeaderCell('詳細'),
+                ],
+              ),
+              // Data Row
+              TableRow(
+                children: [
+                  _buildTableCell(reservationNumber),
+                  _buildTableCell(_formatUsagePeriod(usagePeriod)),
+                  _buildTableCell(quantity),
+                  _buildButtonCell(context), // Cell for the button
                 ],
               ),
             ],
@@ -112,16 +87,66 @@ class ReservationItemWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTableCell(String title, String value) {
+  Widget _buildHeaderCell(String header) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4.0),
-          Text(value),
-        ],
+      child: Text(
+        header,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+      ),
+    );
+  }
+
+  Widget _buildTableCell(String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Text(
+        value,
+        style: const TextStyle(fontSize: 14.0),
+      ),
+    );
+  }
+
+  Widget _buildButtonCell(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.black, width: 2.0),
+          ),
+          child: GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return ReservationDialogBox(
+                    title: title,
+                    reservationNumber: reservationNumber,
+                    usagePeriod: usagePeriod,
+                    quantity: quantity,
+                    amount: amount,
+                    consumptionTax: consumptionTax,
+                    backgroundColor: backgroundColor,
+                    machineName: machineName,
+                    numberOfDays: numberOfDays,
+                    period: period,
+                    reservationDate: reservationDate,
+                    total: total,
+                    unitPrice: unitPrice,
+                  );
+                },
+              );
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(
+                  4.0), // Adjust this padding to control the space
+              child: Icon(Icons.more_horiz),
+            ),
+          ),
+        ),
       ),
     );
   }
