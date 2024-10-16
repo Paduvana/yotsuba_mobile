@@ -3,7 +3,7 @@ import 'package:yotsuba_mobile/widgets/ReservationDialogBox.dart';
 
 class ReservationItemWidget extends StatelessWidget {
   final String title;
-  final String reservationNumber;
+  final int reservationNumber;
   final String usagePeriod;
   final String quantity;
   final Color titleColor;
@@ -74,7 +74,7 @@ class ReservationItemWidget extends StatelessWidget {
               // Data Row
               TableRow(
                 children: [
-                  _buildTableCell(reservationNumber),
+                  _buildTableCell(reservationNumber.toString()),
                   _buildTableCell(_formatUsagePeriod(usagePeriod)),
                   _buildTableCell(quantity),
                   _buildButtonCell(context), // Cell for the button

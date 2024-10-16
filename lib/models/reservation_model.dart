@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class ReservationModel {
+  final int id;
   final String startDate;
   final String endDate;
   final int duration;
@@ -18,6 +19,7 @@ class ReservationModel {
   final String reserveDate;
 
   ReservationModel({
+    required this.id,
     required this.startDate,
     required this.endDate,
     required this.duration,
@@ -37,6 +39,7 @@ class ReservationModel {
   // Factory constructor for creating a ReservationModel instance from JSON
   factory ReservationModel.fromJson(Map<String, dynamic> json) {
     return ReservationModel(
+      id: json['id'],
       startDate: json['start_date'] ?? '',
       endDate: json['end_date'] ?? '',
       duration: json['duration'] ?? 0,
@@ -57,6 +60,7 @@ class ReservationModel {
   // Method to convert a ReservationModel instance to JSON
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'start_date': startDate,
       'end_date': endDate,
       'duration': duration,

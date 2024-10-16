@@ -103,11 +103,12 @@ class _DashboardState extends State<Dashboard> {
   if (mapping == null) {
     return []; // Return an empty list if no mapping is found
   }
-
+  
   return reservations.map<Widget>((reservation) {
+    print(reservation);
     return ReservationItemWidget(
       title: mapping['name'],
-      reservationNumber: reservation['bill_number'],
+      reservationNumber: reservation['id'],
       usagePeriod: '${reservation['start_date']} ~ \n${reservation['end_date']}',
       quantity: reservation['quantity'].toString(),
       amount: '¥${reservation['price']}',
