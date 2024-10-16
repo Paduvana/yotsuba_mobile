@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:yotsuba_mobile/widgets/ReservationDialogBox.dart';
 
-import 'ReservationDialogBox.dart';
 class ReservationItemWidget extends StatelessWidget {
   final String title;
   final String reservationNumber;
@@ -53,43 +53,57 @@ class ReservationItemWidget extends StatelessWidget {
             style: TextStyle(color: titleColor, fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Table(
+            columnWidths: const {
+              0: FlexColumnWidth(2),
+              1: FlexColumnWidth(3),
+              2: FlexColumnWidth(1),
+              3: FlexColumnWidth(1),
+            },
             children: [
-              _buildColumn('予約No.', reservationNumber),
-              _buildColumn('利用期間', _formatUsagePeriod(usagePeriod)),
-              _buildColumn('数量', quantity),
-              _buildColumn('詳細', ''),
-            ],
-          ),
-          const SizedBox(height: 8.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.more_horiz),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return ReservationDialogBox(
-                        title: title,
-                        reservationNumber: reservationNumber,
-                        usagePeriod: usagePeriod,
-                        quantity: quantity,
-                        amount: amount,
-                        consumptionTax: consumptionTax,
-                        backgroundColor: backgroundColor,
-                        machineName: machineName,
-                        numberOfDays: numberOfDays,
-                        period: period,
-                        reservationDate: reservationDate,
-                        total: total,
-                        unitPrice: unitPrice,
-                      );
-                    },
-                  );
-                },
+              TableRow(
+                children: [
+                  _buildTableCell('予約No.', reservationNumber),
+                  _buildTableCell('利用期間', _formatUsagePeriod(usagePeriod)),
+                  _buildTableCell('数量', quantity),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.black, width: 2.0),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.more_horiz),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ReservationDialogBox(
+                                  title: title,
+                                  reservationNumber: reservationNumber,
+                                  usagePeriod: usagePeriod,
+                                  quantity: quantity,
+                                  amount: amount,
+                                  consumptionTax: consumptionTax,
+                                  backgroundColor: backgroundColor,
+                                  machineName: machineName,
+                                  numberOfDays: numberOfDays,
+                                  period: period,
+                                  reservationDate: reservationDate,
+                                  total: total,
+                                  unitPrice: unitPrice,
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -98,14 +112,17 @@ class ReservationItemWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildColumn(String title, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4.0),
-        Text(value),
-      ],
+  Widget _buildTableCell(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4.0),
+          Text(value),
+        ],
+      ),
     );
   }
 
