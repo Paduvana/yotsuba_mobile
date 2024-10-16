@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'ReservationDialogBox.dart';
-
 class ReservationItemWidget extends StatelessWidget {
   final String title;
   final String reservationNumber;
-  final String usagePeriod; // This can be formatted to include line breaks
+  final String usagePeriod;
   final String quantity;
   final Color titleColor;
   final Color backgroundColor;
@@ -15,8 +14,8 @@ class ReservationItemWidget extends StatelessWidget {
   final String unitPrice;
   final int numberOfDays;
   final String amount;
-  final String consumptionTax; // Add consumption tax parameter
-  final String total; // Add total parameter
+  final String consumptionTax;
+  final String total;
 
   const ReservationItemWidget({
     Key? key,
@@ -32,8 +31,8 @@ class ReservationItemWidget extends StatelessWidget {
     required this.unitPrice,
     required this.numberOfDays,
     required this.amount,
-    required this.consumptionTax, // Initialize consumption tax
-    required this.total, // Initialize total
+    required this.consumptionTax,
+    required this.total,
   }) : super(key: key);
 
   @override
@@ -43,7 +42,8 @@ class ReservationItemWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(10.0),
+        border: Border.all(color: Colors.black, width: 2.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,15 +59,15 @@ class ReservationItemWidget extends StatelessWidget {
               _buildColumn('予約No.', reservationNumber),
               _buildColumn('利用期間', _formatUsagePeriod(usagePeriod)),
               _buildColumn('数量', quantity),
-              _buildColumn('詳細', ''), // Detail header
+              _buildColumn('詳細', ''),
             ],
           ),
-          const SizedBox(height: 8.0), // Space below headers
+          const SizedBox(height: 8.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IconButton(
-                icon: const Icon(Icons.more_horiz), // Ellipsis button
+                icon: const Icon(Icons.more_horiz),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -79,9 +79,13 @@ class ReservationItemWidget extends StatelessWidget {
                         quantity: quantity,
                         amount: amount,
                         consumptionTax: consumptionTax,
-                        backgroundColor: backgroundColor, machineName: machineName,
-                        numberOfDays:numberOfDays,period: period,
-                        reservationDate: reservationDate,total: total,unitPrice: unitPrice,
+                        backgroundColor: backgroundColor,
+                        machineName: machineName,
+                        numberOfDays: numberOfDays,
+                        period: period,
+                        reservationDate: reservationDate,
+                        total: total,
+                        unitPrice: unitPrice,
                       );
                     },
                   );
@@ -99,7 +103,7 @@ class ReservationItemWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4.0), // Padding between header and data
+        const SizedBox(height: 4.0),
         Text(value),
       ],
     );
