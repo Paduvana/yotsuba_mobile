@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+
 class ReservationModel {
   final String startDate;
   final String endDate;
@@ -7,11 +10,11 @@ class ReservationModel {
   final String deviceName;
   final int quantity;
   final int status;
-  final String price;
+  final double price;
   final String billNumber;
-  final String unitPrice;
-  final String tax;
-  final String subTotal;
+  final double unitPrice;
+  final double tax;
+  final double subTotal;
   final String reserveDate;
 
   ReservationModel({
@@ -34,20 +37,20 @@ class ReservationModel {
   // Factory constructor for creating a ReservationModel instance from JSON
   factory ReservationModel.fromJson(Map<String, dynamic> json) {
     return ReservationModel(
-      startDate: json['start_date'],
-      endDate: json['end_date'],
-      duration: json['duration'],
-      user: json['user'],
-      deviceId: json['device_id'],
-      deviceName: json['device_name'],
-      quantity: json['quantity'],
-      status: json['status'],
-      price: json['price'],
-      billNumber: json['bill_number'],
-      unitPrice: json['unit_price'],
-      tax: json['tax'],
-      subTotal: json['sub_total'],
-      reserveDate: json['reserve_date'],
+      startDate: json['start_date'] ?? '',
+      endDate: json['end_date'] ?? '',
+      duration: json['duration'] ?? 0,
+      user: json['user'] ?? '',
+      deviceId: json['device_id'] ?? 0,
+      deviceName: json['device_name'] ?? '',
+      quantity: json['quantity'] ?? 0,
+      status: json['status'] ?? 0,
+      price: (json['price'] != null) ? json['price'].toDouble() : 0.0,
+      billNumber: json['bill_number'] ?? '',
+      unitPrice: (json['unit_price'] != null) ? json['unit_price'].toDouble() : 0.0,
+      tax: (json['tax'] != null) ? json['tax'].toDouble() : 0.0,
+      subTotal: (json['sub_total'] != null) ? json['sub_total'].toDouble() : 0.0,
+      reserveDate: json['reserve_date'] ?? '',
     );
   }
 
@@ -70,4 +73,27 @@ class ReservationModel {
       'reserve_date': reserveDate,
     };
   }
+     static const Map<String, Map<String, dynamic>> reservationMapping = {
+    "overdue_reservation": {
+      "name": "返却期限が過ぎています。",
+      "color": Colors.red,
+      "border": Border(bottom: BorderSide(color: Colors.black, width: 1.0)),
+    },
+    "due_today_reservation": {
+      "name": "本日返却予定があります。",
+      "color": Colors.red,
+      "border": Border(bottom: BorderSide(color: Colors.black, width: 1.0)),
+    },
+    "due_soon_reservation": {
+      "name": "近日返却予定があります。",
+      "color": Colors.orange,
+      "border": Border(bottom: BorderSide(color: Colors.black, width: 1.0)),
+    },
+    "in_use_reservation": {
+      "name": "ご利用中",
+      "color": Colors.green,
+      "border": Border(bottom: BorderSide(color: Colors.black, width: 1.0)),
+    },
+  };
 }
+

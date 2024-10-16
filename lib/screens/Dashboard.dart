@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yotsuba_mobile/models/reservation_model.dart'; // Import the ReservationModel
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
 import 'package:yotsuba_mobile/widgets/ReservationItemWidget.dart';
 import 'package:yotsuba_mobile/services/AuthService.dart';
@@ -98,44 +99,32 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _getBodyContent() {
-        return ListView(
-          children: [
-            if (_dashboardData['overdue_reservation'] != null)
-              ..._buildReservationWidgets(
-                _dashboardData['overdue_reservation'],
-                title: '返却期限が過ぎてしまいました。',
-                titleColor: Colors.red,
-                backgroundColor: Colors.red[100]!,
-              ),
-            if (_dashboardData['due_today_reservation'] != null)
-              ..._buildReservationWidgets(
-                _dashboardData['due_today_reservation'],
-                title: '本日返却予定があります。',
-                titleColor: Colors.orange,
-                backgroundColor: Colors.white,
-              ),
-            if (_dashboardData['due_soon_reservation'] != null)
-              ..._buildReservationWidgets(
-                _dashboardData['due_soon_reservation'],
-                title: '近日返却予定があります。',
-                titleColor: Colors.blue,
-                backgroundColor: Colors.white,
-              ),
-            if (_dashboardData['in_use_reservation'] != null)
-              ..._buildReservationWidgets(
-                _dashboardData['in_use_reservation'],
-                title: 'ご利用中',
-                titleColor: Colors.green,
-                backgroundColor: Colors.white,
-              ),
-          ],
-        );
+    List<Widget> reservationWidgets = [];
+
+    // Iterate through the dashboard data keys and use reservationMapping to get title and color
+    _dashboardData.forEach((key, reservations) {
+      if (reservations != null && reservations is List && reservations.isNotEmpty) {
+        final mapping = ReservationModel.reservationMapping[key];
+        if (mapping != null) {
+          reservationWidgets.addAll(
+            _buildReservationWidgets(
+              reservations,
+              title: mapping['name'],
+              titleColor: mapping['color'],
+              border: mapping['border'],
+            ),
+          );
+        }
+      }
+    });
+
+    return ListView(children: reservationWidgets);
   }
 
   List<Widget> _buildReservationWidgets(List<dynamic> reservations,
       {required String title,
-      required Color titleColor,
-      required Color backgroundColor}) {
+      required Color titleColor, 
+      required border}) {
     return reservations.map((reservation) {
       return ReservationItemWidget(
         title: title,
@@ -151,7 +140,7 @@ class _DashboardState extends State<Dashboard> {
         numberOfDays: reservation['duration'],
         reservationDate: DateTime.parse(reservation['reserve_date']),
         titleColor: titleColor,
-        backgroundColor: backgroundColor,
+        backgroundColor: Colors.white,
       );
     }).toList();
   }
