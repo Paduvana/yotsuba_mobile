@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:yotsuba_mobile/widgets/Dashboard.dart';
-import 'package:yotsuba_mobile/widgets/Dashboard.dart';
-import 'package:yotsuba_mobile/widgets/LoginWidget.dart'; 
+import 'package:yotsuba_mobile/screens/Dashboard.dart';
+import 'package:yotsuba_mobile/screens/LoginWidget.dart'; 
 
 void main() {
   runApp(const MyApp());

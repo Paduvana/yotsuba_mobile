@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
 
 class Reservation {
   final String reservationNo;
@@ -21,6 +22,7 @@ class ReservationConfirmation extends StatefulWidget {
 
 class _ReservationConfirmationState extends State<ReservationConfirmation> {
   bool showCurrent = true; // Toggle between Current and Past reservations
+  int _selectedIndex = 2; // Start with "予約確認済み" tab selected
 
   final List<Reservation> currentReservations = [
     Reservation(reservationNo: '123456', usagePeriod: '01/01/2024 - 01/07/2024', quantity: 5),
@@ -37,8 +39,11 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
     List<Reservation> reservationsToShow = showCurrent ? currentReservations : pastReservations;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Reservation Confirmation'),
+        title: const Text('予約確認'),
+        centerTitle: true,
+        backgroundColor: Colors.teal,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -53,10 +58,10 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
                         showCurrent = true;
                       });
                     },
-                    child: const Text('Current Reservation'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: showCurrent ? Colors.teal : Colors.grey,
                     ),
+                    child: const Text('Current Reservation'),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -67,10 +72,10 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
                         showCurrent = false;
                       });
                     },
-                    child: const Text('Past Reservation'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: !showCurrent ? Colors.teal : Colors.grey,
                     ),
+                    child: const Text('Past Reservation'),
                   ),
                 ),
               ],
@@ -78,8 +83,8 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
             const SizedBox(height: 16),
 
             // Header Row
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Expanded(
                   flex: 2,
                   child: Text(
@@ -142,6 +147,9 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: _selectedIndex,
       ),
     );
   }
