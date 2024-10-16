@@ -99,49 +99,42 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _getBodyContent() {
-    List<Widget> reservationWidgets = [];
+  List<Widget> reservationWidgets = [];
 
-    // Iterate through the dashboard data keys and use reservationMapping to get title and color
-    _dashboardData.forEach((key, reservations) {
-      if (reservations != null && reservations is List && reservations.isNotEmpty) {
-        final mapping = ReservationModel.reservationMapping[key];
-        if (mapping != null) {
-          reservationWidgets.addAll(
-            _buildReservationWidgets(
-              reservations,
-              title: mapping['name'],
-              titleColor: mapping['color'],
-              border: mapping['border'],
-            ),
-          );
-        }
-      }
-    });
+  // Iterate through the dashboard data keys and use reservationMapping to get title, color, and border
+  _dashboardData.forEach((key, reservations) {
+    if (reservations != null && reservations is List && reservations.isNotEmpty) {
+      reservationWidgets.addAll(_buildReservationWidgets(reservations, key));
+    }
+  });
 
-    return ListView(children: reservationWidgets);
+  return ListView(children: reservationWidgets);
+}
+
+  List<Widget> _buildReservationWidgets(List<dynamic> reservations, String key) {
+  final mapping = ReservationModel.reservationMapping[key];
+
+  if (mapping == null) {
+    return []; // Return an empty list if no mapping is found
   }
 
-  List<Widget> _buildReservationWidgets(List<dynamic> reservations,
-      {required String title,
-      required Color titleColor, 
-      required border}) {
-    return reservations.map((reservation) {
-      return ReservationItemWidget(
-        title: title,
-        reservationNumber: reservation['bill_number'],
-        usagePeriod: '${reservation['start_date']} ~ \n${reservation['end_date']}',
-        quantity: reservation['quantity'].toString(),
-        amount: '¥${reservation['price']}',
-        consumptionTax: '¥${reservation['tax']}',
-        total: '¥${reservation['sub_total']}',
-        machineName: reservation['device_name'],
-        period: 'Daily',
-        unitPrice: '¥${reservation['unit_price']}',
-        numberOfDays: reservation['duration'],
-        reservationDate: DateTime.parse(reservation['reserve_date']),
-        titleColor: titleColor,
-        backgroundColor: Colors.white,
-      );
-    }).toList();
+  return reservations.map<Widget>((reservation) {
+    return ReservationItemWidget(
+      title: mapping['name'],
+      reservationNumber: reservation['bill_number'],
+      usagePeriod: '${reservation['start_date']} ~ \n${reservation['end_date']}',
+      quantity: reservation['quantity'].toString(),
+      amount: '¥${reservation['price']}',
+      consumptionTax: '¥${reservation['tax']}',
+      total: '¥${reservation['sub_total']}',
+      machineName: reservation['device_name'],
+      period: 'Daily',
+      unitPrice: '¥${reservation['unit_price']}',
+      numberOfDays: reservation['duration'],
+      reservationDate: DateTime.parse(reservation['reserve_date']),
+      titleColor: mapping['color'],
+      backgroundColor: Colors.white,
+    );
+  }).toList();
   }
 }

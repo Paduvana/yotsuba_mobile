@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/screens/Dashboard.dart';
-import 'package:yotsuba_mobile/screens/LoginWidget.dart'; 
+import 'package:yotsuba_mobile/screens/LoginWidget.dart';
+import 'package:yotsuba_mobile/services/AuthService.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final token = await AuthService().getToken();
+  runApp(MyApp(initialRoute: token != null ? '/home' : '/'));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+
+  const MyApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +22,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      initialRoute: '/',
+      initialRoute: initialRoute,
       routes: {
         '/': (context) => LoginWidget(),
         '/home': (context) => const Dashboard(),

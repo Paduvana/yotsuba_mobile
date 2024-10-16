@@ -35,203 +35,154 @@ class ReservationDialogBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(10.0),
-      elevation: 5.0,
-      color: backgroundColor,
+    return Dialog(
+      insetPadding: const EdgeInsets.all(10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 20.0,
-                color: titleColor,
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.underline,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Expanded(child: Text('予約No.', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
-                Expanded(child: Text('利用期間', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
-                Expanded(child: Text('数量', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
-                Expanded(child: Text('詳細', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
-              ],
-            ),
-            const SizedBox(height: 5),
-            const Divider(thickness: 1.0, color: Colors.grey),
-            const SizedBox(height: 5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(child: Text(reservationNumber, style: const TextStyle(fontSize: 16.0))),
-                Expanded(child: Text(usagePeriod, style: const TextStyle(fontSize: 16.0))),
-                Expanded(child: Text(quantity, style: const TextStyle(fontSize: 16.0))),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                      onTap: () {
-                        showGeneralDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          barrierLabel: '',
-                          pageBuilder: (context, animation1, animation2) {
-                            return Scaffold(
-                              appBar: AppBar(
-                                title: Text(
-                                  'Details',
-                                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-                                ),
-                                automaticallyImplyLeading: false,
-                                actions: [
-                                  IconButton(
-                                    icon: Icon(Icons.close),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              ),
-                              body: Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Reservation Date label and value without divider
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text('Reservation Date:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                        Text('${reservationDate.month}/${reservationDate.day}/${reservationDate.year}'),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-
-                                    // Row for labels and their values below them
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text('Machine/Period ', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              const SizedBox(height: 5), // Add space before divider
-                                              const Divider(thickness: 1.0, color: Colors.grey), // Divider
-                                              const SizedBox(height: 5), // Add space after divider
-                                              Text('$machineName $period'),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text('Quantity ', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              const SizedBox(height: 5), // Add space before divider
-                                              const Divider(thickness: 1.0, color: Colors.grey), // Divider
-                                              const SizedBox(height: 5), // Add space after divider
-                                              Text(quantity),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text('Unit Price ', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              const SizedBox(height: 5), // Add space before divider
-                                              const Divider(thickness: 1.0, color: Colors.grey), // Divider
-                                              const SizedBox(height: 5), // Add space after divider
-                                              Text(unitPrice),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text('No of Days ', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              const SizedBox(height: 5), // Add space before divider
-                                              const Divider(thickness: 1.0, color: Colors.grey), // Divider
-                                              const SizedBox(height: 5), // Add space after divider
-                                              Text(numberOfDays.toString()),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text('Amount ', style: TextStyle(fontWeight: FontWeight.bold)),
-                                              const SizedBox(height: 5), // Add space before divider
-                                              const Divider(thickness: 1.0, color: Colors.grey), // Divider
-                                              const SizedBox(height: 5), // Add space after divider
-                                              Text(amount),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    const Divider(thickness: 1.0, color: Colors.grey), // Divider after values
-
-                                    // Add Consumption Tax and Total
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('Consumption Tax:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                        Text(consumptionTax), // Show consumption tax value
-                                      ],
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text('Total (tax included):', style: TextStyle(fontWeight: FontWeight.bold)),
-                                        Text(total), // Show total value
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                          transitionBuilder: (context, animation1, animation2, child) {
-                            return FadeTransition(
-                              opacity: animation1,
-                              child: child,
-                            );
-                          },
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey[300],
-                        ),
-                        child: const Icon(
-                          Icons.more_horiz,
-                          color: Colors.black,
-                        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with Close Button
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '詳細（予約No.$reservationNumber）',
+                      style: TextStyle(
+                        fontSize: 15.0,
+                        color: titleColor,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-          ],
+                  IconButton(
+                    icon: Icon(Icons.close, color: Colors.black),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              // Reservation Date
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('予約日', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 5),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      '${reservationDate.year}/${reservationDate.month}/${reservationDate.day}（木）',
+                      style: const TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Table Headers
+              const Row(
+                children: [
+                  Expanded(flex: 2, child: Text('機器/期間', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
+                  Expanded(child: Text('数量', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
+                  Expanded(child: Text('単価', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
+                  Expanded(child: Text('日数', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
+                  Expanded(child: Text('金額', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
+                ],
+              ),
+              const SizedBox(height: 10),
+              const Divider(thickness: 1.0, color: Colors.grey),
+              const SizedBox(height: 10),
+              // Table Data
+             Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text('$machineName \n ${_formatUsagePeriod(usagePeriod)}', style: const TextStyle(fontSize: 14.0)),
+                  ),
+                  Expanded(
+                    child: Text(quantity, style: const TextStyle(fontSize: 14.0)),
+                  ),
+                  Expanded(
+                    child: Text(unitPrice, style: const TextStyle(fontSize: 14.0)),
+                  ),
+                  Expanded(
+                    child: Text(numberOfDays.toString(), style: const TextStyle(fontSize: 14.0)),
+                  ),
+                  Expanded(
+                    child: Text(amount, style: const TextStyle(fontSize: 14.0)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              const Divider(thickness: 1.0, color: Colors.grey),
+              const SizedBox(height: 20),
+              // Consumption Tax
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('消費税', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Text(
+                      consumptionTax,
+                      style: const TextStyle(fontSize: 16.0, color: Colors.black),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15),
+              // Total
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('合計（税込）', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Text(
+                      total,
+                      style: const TextStyle(fontSize: 16.0, color: Colors.black),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
   }
+    String _formatUsagePeriod(String period) {
+      // Split the usage period into two dates
+      List<String> dates = period.replaceAll('-', '/').split('〜');
+      if (dates.length == 2) {
+        String startDate = dates[0].trim();
+        String endDate = dates[1].trim();
+            String formattedStart = startDate.substring(5);
+            String formattedEnd = endDate.substring(5);
+            return '$formattedStart ~ $formattedEnd';
+      }
+      else{
+        return period.replaceAll('-', '/');
+      }
+}
+
 }

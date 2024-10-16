@@ -73,26 +73,22 @@ class ReservationModel {
       'reserve_date': reserveDate,
     };
   }
-     static const Map<String, Map<String, dynamic>> reservationMapping = {
+    static const Map<String, Map<String, dynamic>> reservationMapping = {
     "overdue_reservation": {
       "name": "返却期限が過ぎています。",
       "color": Colors.red,
-      "border": Border(bottom: BorderSide(color: Colors.black, width: 1.0)),
     },
     "due_today_reservation": {
       "name": "本日返却予定があります。",
       "color": Colors.red,
-      "border": Border(bottom: BorderSide(color: Colors.black, width: 1.0)),
     },
     "due_soon_reservation": {
       "name": "近日返却予定があります。",
       "color": Colors.orange,
-      "border": Border(bottom: BorderSide(color: Colors.black, width: 1.0)),
     },
     "in_use_reservation": {
       "name": "ご利用中",
       "color": Colors.green,
-      "border": Border(bottom: BorderSide(color: Colors.black, width: 1.0)),
     },
   };
 }
