@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/models/reservation_model.dart'; // Import the ReservationModel
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
 import 'package:yotsuba_mobile/widgets/ReservationItemWidget.dart';
-import 'package:yotsuba_mobile/services/AuthService.dart';
 import 'package:yotsuba_mobile/services/DashboardService.dart';
 
 class Dashboard extends StatefulWidget {
@@ -22,29 +21,16 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    _loadTokenAndFetchData(); // Fetch token and then data
+    _fetchDashboardData(); // Fetch token and then data
   }
 
-  Future<void> _loadTokenAndFetchData() async {
-    try {
-      final token = await AuthService().getToken();
-      if (token != null) {
-        await _fetchDashboardData(token);
-      } else {
-        _setError('No access token found');
-      }
-    } catch (e) {
-      _setError('Error retrieving token: $e');
-    }
-  }
-
-  Future<void> _fetchDashboardData(String token) async {
+  Future<void> _fetchDashboardData() async {
     setState(() {
       _isDashboardLoading = true;
     });
 
     try {
-      final data = await _dashboardService.fetchDashboardData(token);
+      final data = await _dashboardService.fetchDashboardData(context);
       setState(() {
         _dashboardData = data;
         _isDashboardLoading = false;
@@ -117,11 +103,12 @@ class _DashboardState extends State<Dashboard> {
   if (mapping == null) {
     return []; // Return an empty list if no mapping is found
   }
-
+  
   return reservations.map<Widget>((reservation) {
+    print(reservation);
     return ReservationItemWidget(
       title: mapping['name'],
-      reservationNumber: reservation['bill_number'],
+      reservationNumber: reservation['id'],
       usagePeriod: '${reservation['start_date']} ~ \n${reservation['end_date']}',
       quantity: reservation['quantity'].toString(),
       amount: '¥${reservation['price']}',

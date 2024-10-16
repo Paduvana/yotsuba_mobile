@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ReservationDialogBox extends StatelessWidget {
   final String title;
-  final String reservationNumber;
+  final int reservationNumber;
   final String usagePeriod;
   final String quantity;
   final Color backgroundColor;
