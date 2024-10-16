@@ -46,10 +46,7 @@ class ReservationDialogBox extends StatelessWidget {
           children: [
             Text(
               title,
-              style: TextStyle(
-                fontSize: 20.0,
-                color: titleColor,
-                fontWeight: FontWeight.bold,
+              style: TextStyle(fontSize: 20.0, color: titleColor, fontWeight: FontWeight.bold,
                 decoration: TextDecoration.underline,
               ),
             ),

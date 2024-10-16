@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'ReservationDialogBox.dart';
-
 class ReservationItemWidget extends StatelessWidget {
   final String title;
   final String reservationNumber;
@@ -53,37 +51,34 @@ class ReservationItemWidget extends StatelessWidget {
             style: TextStyle(color: titleColor, fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8.0),
+          // Header row (no data here)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildColumn('予約No.', reservationNumber),
-              _buildColumn('利用期間', _formatUsagePeriod(usagePeriod)),
-              _buildColumn('数量', quantity),
-              _buildColumn('詳細', ''), // Detail header
+              _buildColumn('予約No.', ''), // No data, just headers
+              _buildColumn('利用期間', ''),
+              _buildColumn('数量', ''),
+              _buildColumn('詳細', ''),
             ],
           ),
+          const Divider(
+            thickness: 1.0,  // Adjust the thickness of the line
+            color: Colors.grey, // Set the color of the line
+          ),
           const SizedBox(height: 8.0), // Space below headers
+          // Data row (actual data corresponding to headers)
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              _buildColumn('', reservationNumber), // Data
+              _buildColumn('', _formatUsagePeriod(usagePeriod)), // Data
+              _buildColumn('', quantity), // Data
               IconButton(
-                icon: const Icon(Icons.more_horiz), // Ellipsis button
+                icon: const Icon(Icons.more_horiz),
                 onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return ReservationDialogBox(
-                        title: title,
-                        reservationNumber: reservationNumber,
-                        usagePeriod: usagePeriod,
-                        quantity: quantity,
-                        amount: amount,
-                        consumptionTax: consumptionTax,
-                        backgroundColor: backgroundColor, machineName: machineName,
-                        numberOfDays:numberOfDays,period: period,
-                        reservationDate: reservationDate,total: total,unitPrice: unitPrice,
-                      );
-                    },
+                  // Do something else, e.g., show a snackbar or log
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Details button clicked')),
                   );
                 },
               ),
@@ -106,7 +101,6 @@ class ReservationItemWidget extends StatelessWidget {
   }
 
   String _formatUsagePeriod(String period) {
-    // Format the usage period to include line breaks
     return period.replaceAll(' - ', '\n');
   }
 }
