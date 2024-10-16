@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:yotsuba_mobile/widgets/Dashboard.dart';
 import 'BottomNavBar.dart';  // Import the BottomNavBar widget
-import 'Dashboard.dart';  // Import HomePage for navigation
 import 'main.dart';  // Import main.dart to navigate to MyHomePage
 
 class LogoutPage extends StatefulWidget {

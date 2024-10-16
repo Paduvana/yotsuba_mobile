@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'LoginService.dart'; // Import the API service
+import '../services/LoginService.dart'; // Import the API service
 
 class LoginWidget extends StatefulWidget {
   @override
