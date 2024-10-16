@@ -128,6 +128,6 @@ class ReservationItemWidget extends StatelessWidget {
 
   String _formatUsagePeriod(String period) {
     // Format the usage period to include line breaks
-    return period.replaceAll(' - ', '\n');
+    return period.replaceAll('-', '/');
   }
 }

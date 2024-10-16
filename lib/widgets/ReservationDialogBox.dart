@@ -54,7 +54,7 @@ class ReservationDialogBox extends StatelessWidget {
                     child: Text(
                       '詳細（予約No.$reservationNumber）',
                       style: TextStyle(
-                        fontSize: 20.0,
+                        fontSize: 15.0,
                         color: titleColor,
                         fontWeight: FontWeight.bold,
                       ),
@@ -83,7 +83,7 @@ class ReservationDialogBox extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       '${reservationDate.year}/${reservationDate.month}/${reservationDate.day}（木）',
-                      style: TextStyle(fontSize: 16.0),
+                      style: const TextStyle(fontSize: 16.0),
                     ),
                   ),
                 ],
@@ -92,7 +92,7 @@ class ReservationDialogBox extends StatelessWidget {
               // Table Headers
               const Row(
                 children: [
-                  Expanded(child: Text('機器/期間', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
+                  Expanded(flex: 2, child: Text('機器/期間', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
                   Expanded(child: Text('数量', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
                   Expanded(child: Text('単価', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
                   Expanded(child: Text('日数', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
@@ -103,9 +103,10 @@ class ReservationDialogBox extends StatelessWidget {
               const Divider(thickness: 1.0, color: Colors.grey),
               const SizedBox(height: 10),
               // Table Data
-              Row(
+             Row(
                 children: [
                   Expanded(
+                    flex: 2,
                     child: Text('$machineName \n ${_formatUsagePeriod(usagePeriod)}', style: const TextStyle(fontSize: 14.0)),
                   ),
                   Expanded(
@@ -129,7 +130,7 @@ class ReservationDialogBox extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('消費税', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  const Text('消費税', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey)),
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
@@ -148,7 +149,7 @@ class ReservationDialogBox extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('合計（税込）', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  const Text('合計（税込）', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey)),
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
@@ -170,14 +171,18 @@ class ReservationDialogBox extends StatelessWidget {
     );
   }
     String _formatUsagePeriod(String period) {
-    List<String> dates = period.split('〜');
-    if (dates.length == 2) {
-      String startDate = dates[0].trim();
-      String endDate = dates[1].trim();
-      DateTime start = DateTime.parse(startDate);
-      DateTime end = DateTime.parse(endDate);
-      return '${start.month}/${start.day} ~ ${end.month}/${end.day}';
-    }
-    return period;
-  }
+      // Split the usage period into two dates
+      List<String> dates = period.replaceAll('-', '/').split('〜');
+      if (dates.length == 2) {
+        String startDate = dates[0].trim();
+        String endDate = dates[1].trim();
+            String formattedStart = startDate.substring(5);
+            String formattedEnd = endDate.substring(5);
+            return '$formattedStart ~ $formattedEnd';
+      }
+      else{
+        return period.replaceAll('-', '/');
+      }
+}
+
 }
