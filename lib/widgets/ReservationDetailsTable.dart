@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:yotsuba_mobile/widgets/ReservationDialogBox.dart';
+import 'package:yotsuba_mobile/widgets/ReservationDetailsDialog.dart';
 
 class ReservationDetailsTable extends StatelessWidget {
   final List<Map<String, dynamic>> reservations;
@@ -85,7 +85,7 @@ class ReservationDetailsTable extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return ReservationDialogBox(
+                  return ReservationDetailsDialog(
                     reservationNumber: reservation['id'],
                     usagePeriod: '${reservation['start_date']} ~ \n${reservation['end_date']}',
                     quantity: reservation['quantity'].toString(),

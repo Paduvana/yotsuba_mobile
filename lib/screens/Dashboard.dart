@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/models/reservation_model.dart'; // Import the ReservationModel
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
 import 'package:yotsuba_mobile/widgets/CustomAppBar.dart';
-import 'package:yotsuba_mobile/widgets/ReservationItemWidget.dart';
+import 'package:yotsuba_mobile/widgets/DashboardWidget.dart';
 import 'package:yotsuba_mobile/services/DashboardService.dart';
 
 class Dashboard extends StatefulWidget {
@@ -108,7 +108,7 @@ class _DashboardState extends State<Dashboard> {
     Color backgroundColor = key == 'overdue_reservation' ? Colors.red[100]! : Colors.white;
 
     return reservations.map<Widget>((reservation) {
-      return ReservationItemWidget(
+      return Dashboardwidget(
         title: mapping['name'],
         reservation: reservation,
         titleColor: mapping['color'],
