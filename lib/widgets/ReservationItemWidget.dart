@@ -89,10 +89,12 @@ class ReservationItemWidget extends StatelessWidget {
 
   Widget _buildHeaderCell(String header) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Text(
-        header,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+      child: Center(
+        child: Text(
+          header,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+        ),
       ),
     );
   }
@@ -100,18 +102,19 @@ class ReservationItemWidget extends StatelessWidget {
   Widget _buildTableCell(String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Text(
-        value,
-        style: const TextStyle(fontSize: 14.0),
+      child: Center(
+        child: Text(
+          value,
+          style: const TextStyle(fontSize: 14.0),
+        ),
       ),
     );
   }
 
   Widget _buildButtonCell(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Align(
-        alignment: Alignment.centerRight,
+      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+      child: Center(
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
@@ -142,7 +145,7 @@ class ReservationItemWidget extends StatelessWidget {
             },
             child: const Padding(
               padding: EdgeInsets.all(
-                  4.0), // Adjust this padding to control the space
+                  4.0), // Adjust this padding to control the space around the icon
               child: Icon(Icons.more_horiz),
             ),
           ),
