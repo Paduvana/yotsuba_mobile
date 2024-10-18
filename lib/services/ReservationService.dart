@@ -5,21 +5,7 @@ import 'package:yotsuba_mobile/services/APIConstants.dart';
 import 'package:yotsuba_mobile/services/AuthService.dart';
 
 class ReservationService {
-<<<<<<< Updated upstream
-  final authService = AuthService();
 
-  Future<Map<String, dynamic>> fetchReservationData(BuildContext context) async {
-    final url = Uri.parse(ApiConstants.reservationEndpoint);
-    final response = await authService.makeAuthenticatedRequest(url, context);
-
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load reservation data. Status code: ${response.statusCode}');
-    }
-  }
-}
-=======
   final AuthService authService;
 
   ReservationService({required this.authService});
@@ -41,4 +27,3 @@ class ReservationService {
     }
   }
 }
->>>>>>> Stashed changes
