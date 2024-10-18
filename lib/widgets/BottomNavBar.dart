@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/screens/Dashboard.dart';
 import 'package:yotsuba_mobile/screens/UserProfile.dart';
-import '../screens/ReservationConfirmation.dart';
+import '../screens/ReservationList.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;
@@ -22,7 +22,7 @@ class BottomNavBar extends StatelessWidget {
       case 2:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ReservationConfirmation()),
+          MaterialPageRoute(builder: (context) => const ReservationList()),
         );
         break;
       case 3:
