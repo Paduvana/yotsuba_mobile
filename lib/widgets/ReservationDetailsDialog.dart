@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ReservationDialogBox extends StatelessWidget {
-  final String title;
+class ReservationDetailsDialog extends StatelessWidget {
   final int reservationNumber;
   final String usagePeriod;
   final String quantity;
@@ -12,23 +11,22 @@ class ReservationDialogBox extends StatelessWidget {
   final String period;
   final String unitPrice;
   final int numberOfDays;
-  final String amount;
+  final String subTotal;
   final String consumptionTax;
   final String total;
 
-  const ReservationDialogBox({
-    required this.title,
+  const ReservationDetailsDialog({
     required this.reservationNumber,
     required this.usagePeriod,
     required this.quantity,
-    required this.backgroundColor,
+    this.backgroundColor = Colors.white,
     this.titleColor = Colors.black,
     required this.reservationDate,
     required this.machineName,
     required this.period,
     required this.unitPrice,
     required this.numberOfDays,
-    required this.amount,
+    required this.subTotal,
     required this.consumptionTax,
     required this.total,
   });
@@ -123,7 +121,7 @@ class ReservationDialogBox extends StatelessWidget {
                           child: Text(numberOfDays.toString(), style: const TextStyle(fontSize: 14.0)),
                         ),
                         Expanded(
-                          child: Text(amount, style: const TextStyle(fontSize: 14.0)),
+                          child: Text(subTotal, style: const TextStyle(fontSize: 14.0)),
                         ),
                       ],
                     ),
@@ -183,7 +181,6 @@ class ReservationDialogBox extends StatelessWidget {
   String _formatUsagePeriod(String period) {
     // Split the usage period into two dates
     List<String> dates = period.replaceAll('-', '/').trim().split('~');
-    print(dates.length);
     if (dates.length == 2) {
       String startDate = dates[0].trim();
       String endDate = dates[1].trim();

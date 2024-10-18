@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/screens/Dashboard.dart';
-import 'package:yotsuba_mobile/screens/LoginWidget.dart';
+import 'package:yotsuba_mobile/screens/Login.dart';
 import 'package:yotsuba_mobile/services/AuthService.dart';
 
 void main() async {
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: initialRoute,
       routes: {
-        '/': (context) => LoginWidget(),
+        '/': (context) => Login(),
         '/home': (context) => const Dashboard(),
       },
     );

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import '../services/LoginService.dart';
 import 'ReissuePassword.dart'; // Import the API service
 
-class LoginWidget extends StatefulWidget {
+class Login extends StatefulWidget {
   @override
-  _LoginWidgetState createState() => _LoginWidgetState();
+  _LoginState createState() => _LoginState();
 }
 
-class _LoginWidgetState extends State<LoginWidget> {
+class _LoginState extends State<Login> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
@@ -104,7 +104,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                     );
                   },
                   child: const Text(
-                    'Reissue Password',
+                    'パスワードを再発行する',
                     style: TextStyle(
                       color: Colors.black,
                       decoration: TextDecoration.underline, // Underline to indicate it's clickable

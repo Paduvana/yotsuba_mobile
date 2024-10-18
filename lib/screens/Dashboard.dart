@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/models/reservation_model.dart'; // Import the ReservationModel
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
 import 'package:yotsuba_mobile/widgets/CustomAppBar.dart';
-import 'package:yotsuba_mobile/widgets/ReservationItemWidget.dart';
+import 'package:yotsuba_mobile/widgets/DashboardWidget.dart';
 import 'package:yotsuba_mobile/services/DashboardService.dart';
 
 class Dashboard extends StatefulWidget {
@@ -108,19 +108,9 @@ class _DashboardState extends State<Dashboard> {
     Color backgroundColor = key == 'overdue_reservation' ? Colors.red[100]! : Colors.white;
 
     return reservations.map<Widget>((reservation) {
-      return ReservationItemWidget(
+      return Dashboardwidget(
         title: mapping['name'],
-        reservationNumber: reservation['id'],
-        usagePeriod: '${reservation['start_date']} ~ \n${reservation['end_date']}',
-        quantity: reservation['quantity'].toString(),
-        amount: '¥${reservation['price']}',
-        consumptionTax: '¥${reservation['tax']}',
-        total: '¥${reservation['sub_total']}',
-        machineName: reservation['device_name'],
-        period: 'Daily',
-        unitPrice: '¥${reservation['unit_price']}',
-        numberOfDays: reservation['duration'],
-        reservationDate: DateTime.parse(reservation['reserve_date']),
+        reservation: reservation,
         titleColor: mapping['color'],
         backgroundColor: backgroundColor, // Use the conditional color
       );
