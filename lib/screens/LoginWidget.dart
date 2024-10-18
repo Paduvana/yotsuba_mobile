@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/LoginService.dart'; // Import the API service
+import '../services/LoginService.dart';
+import 'ReissuePassword.dart'; // Import the API service
 
 class LoginWidget extends StatefulWidget {
   @override
@@ -94,6 +95,22 @@ class _LoginWidgetState extends State<LoginWidget> {
                               'Sign In',
                             ),
                           ),
+                    const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ReissuePassword()),
+                    );
+                  },
+                  child: const Text(
+                    'Reissue Password',
+                    style: TextStyle(
+                      color: Colors.black,
+                      decoration: TextDecoration.underline, // Underline to indicate it's clickable
+                    ),
+                  ),
+                ),
                   ],
                 ),
               ),

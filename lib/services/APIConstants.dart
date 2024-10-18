@@ -3,5 +3,5 @@ class ApiConstants {
   static const String dashboardEndpoint = '$baseUrl/dashboard/';
   static const String loginEndpoint = '$baseUrl/login/';
   static const String refreshTokenEndpoint = '$baseUrl/token/refresh/';
-  static const String reservationEndpoint = '$baseUrl/reservation/';
+  static const String reservationEndpoint = '$baseUrl/reservations/';
 }
