@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:yotsuba_mobile/screens/LoginWidget.dart';
+import 'package:yotsuba_mobile/screens/Login.dart';
 import 'package:yotsuba_mobile/services/APIConstants.dart';
 
 class AuthService {
@@ -94,7 +94,7 @@ class AuthService {
   void _redirectToLoginPage(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginWidget()),
+      MaterialPageRoute(builder: (context) => Login()),
     );
   }
 }

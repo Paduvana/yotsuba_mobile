@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'LoginWidget.dart'; // Import your login page
+import 'Login.dart'; // Import your login page
 
 class PasswordCheck extends StatefulWidget {
   @override
@@ -97,7 +97,7 @@ class _PasswordCheckState extends State<PasswordCheck> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => LoginWidget(),
+                                builder: (context) => Login(),
                               ),
                             );
                           },
