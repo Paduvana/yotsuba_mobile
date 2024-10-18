@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/widgets/ReservationDetailsTable.dart';
-import 'package:yotsuba_mobile/widgets/ReservationDialogBox.dart';
 
 class Dashboardwidget extends StatelessWidget {
   final String title;

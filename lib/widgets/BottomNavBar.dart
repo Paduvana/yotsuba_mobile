@@ -20,7 +20,7 @@ class BottomNavBar extends StatelessWidget {
       case 1:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => NewReservationPage()), // Navigate to the NewReservaion page
+          MaterialPageRoute(builder: (context) =>  NewReservationPage()), // Navigate to the NewReservation page
         );
         break;
       case 2:
