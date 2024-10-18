@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:yotsuba_mobile/screens/Dashboard.dart';
+import 'package:yotsuba_mobile/screens/LoginWidget.dart';
 import '../widgets/BottomNavBar.dart';  // Import the BottomNavBar widget
 
 class UserProfile extends StatefulWidget {
@@ -108,7 +109,7 @@ class _UserProfileState extends State<UserProfile> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const Dashboard()),
+                  MaterialPageRoute(builder: (context) => LoginWidget()),
                 );
               },
               style: ElevatedButton.styleFrom(

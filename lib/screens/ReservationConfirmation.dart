@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
 import 'package:yotsuba_mobile/services/ReservationService.dart';
-
 import 'package:yotsuba_mobile/services/AuthService.dart';
 
 class ReservationConfirmation extends StatefulWidget {
@@ -20,10 +19,8 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
   bool _isLoading = true;
   String? _errorMessage;
 
-
   final AuthService _authService = AuthService();
   late final ReservationService _reservationService;
-
 
   @override
   void initState() {
@@ -76,7 +73,6 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
   }
 
   Widget _buildReservationDetails() {
-
     List<dynamic> reservationsToShow = showCurrent
         ? _reservationData['currentReservations']
         : _reservationData['pastReservations'];
@@ -105,11 +101,11 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
             children: const [
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Text('Current Reservation'),
+                child: Text('現在の予約'),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Text('Past Reservation'),
+                child: Text('過去の予約'),
               ),
             ],
           ),
@@ -121,28 +117,28 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
               Expanded(
                 flex: 2,
                 child: Text(
-                  'Reservation No.',
+                  '予約No.',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 flex: 2,
                 child: Text(
-                  'Usage Period',
+                  '利用期間',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 flex: 1,
                 child: Text(
-                  'Quantity',
+                  '数量',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 flex: 1,
                 child: Text(
-                  'Details',
+                  '詳細',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
