@@ -1,26 +1,25 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'BottomNavBar.dart';  // Import the BottomNavBar widget
-import 'HomePage.dart';  // Import HomePage for navigation
-import 'main.dart';  // Import main.dart to navigate to MyHomePage
+import 'package:yotsuba_mobile/screens/Dashboard.dart';
+import 'package:yotsuba_mobile/screens/LoginWidget.dart';
+import 'package:yotsuba_mobile/widgets/CustomAppBar.dart';
+import '../widgets/BottomNavBar.dart';  // Import the BottomNavBar widget
 
-class LogoutPage extends StatefulWidget {
-  final String accessToken; // Accept the access token as a parameter
-
-  const LogoutPage({Key? key, required this.accessToken}) : super(key: key); // Constructor
+class UserProfile extends StatefulWidget {
+  const UserProfile({super.key}); // Constructor
 
   @override
-  _LogoutPageState createState() => _LogoutPageState();
+  _UserProfileState createState() => _UserProfileState();
 }
 
-class _LogoutPageState extends State<LogoutPage> {
+class _UserProfileState extends State<UserProfile> {
   File? _image;
   final picker = ImagePicker();
   String _userName = '';
   String _email = '';
   String _password = '';
-  int _selectedIndex = 0; // Track the selected index for BottomNavBar
+  final int _selectedIndex = 3; // Track the selected index for BottomNavBar
 
   // Function to pick an image
   Future<void> _pickImage(ImageSource source) async {
@@ -32,38 +31,11 @@ class _LogoutPageState extends State<LogoutPage> {
     }
   }
 
-  // Function to handle navigation item tap
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index; // Update the selected index
-    });
-
-    // Handle navigation logic based on index
-    switch (index) {
-      case 0:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage(accessToken: widget.accessToken)), // Pass token to HomePage
-        );
-        break;
-      case 1:
-      // Implement navigation for other tabs if applicable
-        break;
-      case 2:
-      // Implement navigation for other tabs if applicable
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white, // Set the background color to white
-      appBar: AppBar(
-        title: const Text('設定'), // Title of the page
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-      ),
+      appBar: const CustomAppBar(title: '設定',hideBackButton: true),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -134,13 +106,13 @@ class _LogoutPageState extends State<LogoutPage> {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => MyHomePage(title: 'Yotsuba')),
+                  MaterialPageRoute(builder: (context) => LoginWidget()),
                 );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
               ),
-              child: Row(
+              child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: const [
                   Icon(Icons.logout, color: Colors.black),
@@ -154,7 +126,6 @@ class _LogoutPageState extends State<LogoutPage> {
       ),
       bottomNavigationBar: BottomNavBar(
         selectedIndex: _selectedIndex, // Pass the selected index
-        onItemTapped: _onItemTapped, // Pass the callback function
       ),
     );
   }
