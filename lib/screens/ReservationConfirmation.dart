@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
 import 'package:yotsuba_mobile/services/ReservationService.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:yotsuba_mobile/services/AuthService.dart';
+>>>>>>> Stashed changes
 
 class ReservationConfirmation extends StatefulWidget {
   const ReservationConfirmation({Key? key}) : super(key: key);
@@ -17,11 +21,23 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
   Map<String, dynamic> _reservationData = {};
   bool _isLoading = true;
   String? _errorMessage;
+<<<<<<< Updated upstream
   final ReservationService _reservationService = ReservationService();
 
   @override
   void initState() {
     super.initState();
+=======
+
+  final AuthService _authService = AuthService();
+  late final ReservationService _reservationService;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _reservationService = ReservationService(authService: _authService);
+>>>>>>> Stashed changes
     _fetchReservationData();
   }
 
@@ -69,7 +85,13 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
   }
 
   Widget _buildReservationDetails() {
+<<<<<<< Updated upstream
     List<dynamic> reservationsToShow = showCurrent ? _reservationData['currentReservations'] : _reservationData['pastReservations'];
+=======
+    List<dynamic> reservationsToShow = showCurrent
+        ? _reservationData['currentReservations']
+        : _reservationData['pastReservations'];
+>>>>>>> Stashed changes
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
