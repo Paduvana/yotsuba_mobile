@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/models/reservation_model.dart'; // Import the ReservationModel
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
+import 'package:yotsuba_mobile/widgets/CustomAppBar.dart';
 import 'package:yotsuba_mobile/widgets/ReservationItemWidget.dart';
 import 'package:yotsuba_mobile/services/DashboardService.dart';
 
@@ -51,10 +52,9 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-        title: const Text('ダッシュボード'),
+      appBar: const CustomAppBar(
+        title: 'ダッシュボード',
+        hideBackButton: true,
       ),
       body: _isDashboardLoading
           ? _buildLoadingIndicator()
@@ -85,43 +85,45 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _getBodyContent() {
-  List<Widget> reservationWidgets = [];
+    List<Widget> reservationWidgets = [];
 
-  // Iterate through the dashboard data keys and use reservationMapping to get title, color, and border
-  _dashboardData.forEach((key, reservations) {
-    if (reservations != null && reservations is List && reservations.isNotEmpty) {
-      reservationWidgets.addAll(_buildReservationWidgets(reservations, key));
-    }
-  });
+    // Iterate through the dashboard data keys and use reservationMapping to get title, color, and border
+    _dashboardData.forEach((key, reservations) {
+      if (reservations != null && reservations is List && reservations.isNotEmpty) {
+        reservationWidgets.addAll(_buildReservationWidgets(reservations, key));
+      }
+    });
 
-  return ListView(children: reservationWidgets);
-}
+    return ListView(children: reservationWidgets);
+  }
 
   List<Widget> _buildReservationWidgets(List<dynamic> reservations, String key) {
-  final mapping = ReservationModel.reservationMapping[key];
+    final mapping = ReservationModel.reservationMapping[key];
 
-  if (mapping == null) {
-    return []; // Return an empty list if no mapping is found
-  }
-  
-  return reservations.map<Widget>((reservation) {
-    print(reservation);
-    return ReservationItemWidget(
-      title: mapping['name'],
-      reservationNumber: reservation['id'],
-      usagePeriod: '${reservation['start_date']} ~ \n${reservation['end_date']}',
-      quantity: reservation['quantity'].toString(),
-      amount: '¥${reservation['price']}',
-      consumptionTax: '¥${reservation['tax']}',
-      total: '¥${reservation['sub_total']}',
-      machineName: reservation['device_name'],
-      period: 'Daily',
-      unitPrice: '¥${reservation['unit_price']}',
-      numberOfDays: reservation['duration'],
-      reservationDate: DateTime.parse(reservation['reserve_date']),
-      titleColor: mapping['color'],
-      backgroundColor: Colors.white,
-    );
-  }).toList();
+    if (mapping == null) {
+      return []; // Return an empty list if no mapping is found
+    }
+
+    // Define the background color based on the reservation type
+    Color backgroundColor = key == 'overdue_reservation' ? Colors.red[100]! : Colors.white;
+
+    return reservations.map<Widget>((reservation) {
+      return ReservationItemWidget(
+        title: mapping['name'],
+        reservationNumber: reservation['id'],
+        usagePeriod: '${reservation['start_date']} ~ \n${reservation['end_date']}',
+        quantity: reservation['quantity'].toString(),
+        amount: '¥${reservation['price']}',
+        consumptionTax: '¥${reservation['tax']}',
+        total: '¥${reservation['sub_total']}',
+        machineName: reservation['device_name'],
+        period: 'Daily',
+        unitPrice: '¥${reservation['unit_price']}',
+        numberOfDays: reservation['duration'],
+        reservationDate: DateTime.parse(reservation['reserve_date']),
+        titleColor: mapping['color'],
+        backgroundColor: backgroundColor, // Use the conditional color
+      );
+    }).toList();
   }
 }

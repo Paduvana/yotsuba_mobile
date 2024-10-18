@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
 import 'package:yotsuba_mobile/services/ReservationService.dart';
 import 'package:yotsuba_mobile/services/AuthService.dart';
+import 'package:yotsuba_mobile/widgets/CustomAppBar.dart';
+
 
 class ReservationConfirmation extends StatefulWidget {
   const ReservationConfirmation({Key? key}) : super(key: key);
@@ -57,12 +59,7 @@ class _ReservationConfirmationState extends State<ReservationConfirmation> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('予約確認'),
-        foregroundColor: Colors.white,
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-      ),
+      appBar: const CustomAppBar(title: '予約確認',hideBackButton: true),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : _errorMessage != null

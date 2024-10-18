@@ -61,7 +61,7 @@ class BottomNavBar extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       backgroundColor: Colors.white,
       selectedLabelStyle: const TextStyle(fontSize: 16),
-      unselectedLabelStyle: const TextStyle(fontSize: 12),
+      unselectedLabelStyle: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
       onTap: (index) => _onItemTapped(context, index),
     );
   }
