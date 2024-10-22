@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
 import 'package:yotsuba_mobile/widgets/SearchFilters.dart';
-import 'package:yotsuba_mobile/widgets/ReservationBottomBar.dart'; // Import ReservationBottomBar
+import 'package:yotsuba_mobile/widgets/ReservationBottomBar.dart';
+import 'package:yotsuba_mobile/widgets/ProductWidget.dart'; // Import ProductWidget
 
 class NewReservationPage extends StatefulWidget {
   @override
-  _ReservationDateState createState() => _ReservationDateState();
+  _NewReservationPageState createState() => _NewReservationPageState();
 }
 
-class _ReservationDateState extends State<NewReservationPage> {
+class _NewReservationPageState extends State<NewReservationPage> {
   DateTime? _rentalDate;
   DateTime? _returnDate;
   final TextEditingController _keywordController = TextEditingController();
@@ -139,6 +140,13 @@ class _ReservationDateState extends State<NewReservationPage> {
             // Combined CategoryDropdown and KeywordSearchBox
             SearchFilters(
               keywordController: _keywordController,
+            ),
+
+            const SizedBox(height: 16),
+
+            // ProductWidget - Product with timeline and options
+            Expanded(
+              child: ProductList(),
             ),
           ],
         ),

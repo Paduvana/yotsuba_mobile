@@ -63,6 +63,11 @@ flutter:
   assets:
     - asset/images/login_banner.png
     - asset/images/logo.png
+    - asset/images/Transit.png
+    - asset/images/device1.png
+    - asset/images/tripod.png
+    - asset/images/taper_guage.png
+    - asset/images/level.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

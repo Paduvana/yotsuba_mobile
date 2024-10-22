@@ -35,7 +35,7 @@ class ReservationBottomBar extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF9E9E9E),  // Changed to #9E9E9E
+                  color: Color(0xFF9E9E9E),
                 ),
               ),
               const SizedBox(width: 8),
