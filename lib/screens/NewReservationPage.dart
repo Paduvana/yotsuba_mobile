@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
-import 'package:yotsuba_mobile/widgets/BottomNavBar.dart'; // Import BottomNavBar
+import 'package:intl/intl.dart';
+import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
+import 'package:yotsuba_mobile/widgets/SearchFilters.dart';
+import 'package:yotsuba_mobile/widgets/ReservationBottomBar.dart'; // Import ReservationBottomBar
 
 class NewReservationPage extends StatefulWidget {
   @override
@@ -10,9 +12,8 @@ class NewReservationPage extends StatefulWidget {
 class _ReservationDateState extends State<NewReservationPage> {
   DateTime? _rentalDate;
   DateTime? _returnDate;
-  String? _selectedCategory = '機械測定機器'; // Default category
-  final List<String> _categories = ['機械測定機器', '機械測定機器ー2', '機械測定機器ー3']; // Dropdown options
-  final TextEditingController _keywordController = TextEditingController(); // Controller for the search box
+  final TextEditingController _keywordController = TextEditingController();
+  final double _totalPrice = 5000; // Example price
 
   Future<void> _selectDate(BuildContext context, bool isRentalDate) async {
     final DateTime? picked = await showDatePicker(
@@ -32,13 +33,17 @@ class _ReservationDateState extends State<NewReservationPage> {
     }
   }
 
+  void _proceedToReservationConfirmation() {
+    // Implement navigation to confirmation screen
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('新規予約'),
+        title: const Text('新規予約', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
-        automaticallyImplyLeading: false, // Remove top left back arrow
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
       ),
@@ -77,7 +82,7 @@ class _ReservationDateState extends State<NewReservationPage> {
                             Text(
                               _rentalDate != null
                                   ? DateFormat('yyyy/MM/dd').format(_rentalDate!)
-                                  : 'Selected Date', // Display selected date or placeholder
+                                  : 'Selected Date',
                               style: const TextStyle(fontSize: 16),
                             ),
                             const SizedBox(width: 16),
@@ -115,7 +120,7 @@ class _ReservationDateState extends State<NewReservationPage> {
                             Text(
                               _returnDate != null
                                   ? DateFormat('yyyy/MM/dd').format(_returnDate!)
-                                  : 'Selected Date', // Display selected date or placeholder
+                                  : 'Selected Date',
                               style: const TextStyle(fontSize: 16),
                             ),
                             const SizedBox(width: 16),
@@ -131,89 +136,26 @@ class _ReservationDateState extends State<NewReservationPage> {
 
             const SizedBox(height: 16),
 
-            // Row for カテゴリーから探す and キーワードで探す
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // カテゴリーから探す
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'カテゴリーから探す',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      width: 185, // Set width as needed
-                      height: 45,
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: DropdownButton<String>(
-                        value: _selectedCategory,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedCategory = newValue;
-                          });
-                        },
-                        items: _categories.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        icon: const Icon(Icons.arrow_drop_down),
-                        isExpanded: true,
-                        underline: SizedBox(), // Remove underline
-                      ),
-                    ),
-                  ],
-                ),
-
-                // キーワードで探す
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'キーワードで探す',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      width: 185, // Set width as needed
-                      height: 45,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: TextField(
-                        controller: _keywordController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(borderSide: BorderSide.none), // Remove default border
-                          suffixIcon: const Icon(Icons.search),
-                          hintText: '', // Hint text
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+            // Combined CategoryDropdown and KeywordSearchBox
+            SearchFilters(
+              keywordController: _keywordController,
             ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(selectedIndex: 1), // Add BottomNavBar with the second tab selected
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Use the new ReservationBottomBar widget
+          ReservationBottomBar(
+            totalPrice: _totalPrice,
+            onProceed: _proceedToReservationConfirmation,
+          ),
+
+          // The original BottomNavBar
+          BottomNavBar(selectedIndex: 1),
+        ],
+      ),
     );
   }
 }
