@@ -64,6 +64,8 @@ flutter:
     - asset/images/login_banner.png
     - asset/images/logo.png
     - asset/images/Transit.png
+    - asset/images/transit2.png
+    - asset/images/transit3.png
     - asset/images/device1.png
     - asset/images/tripod.png
     - asset/images/taper_guage.png

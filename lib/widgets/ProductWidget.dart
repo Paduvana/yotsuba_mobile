@@ -4,12 +4,16 @@ class ProductWidget extends StatefulWidget {
   final String title;
   final String imagePath;
   final double basePrice;
+  final List<String> imageGallery;
+  final VoidCallback onAddToCart;
 
-  const ProductWidget({
+  ProductWidget({
     Key? key,
     required this.title,
     required this.imagePath,
     required this.basePrice,
+    required this.imageGallery,
+    required this.onAddToCart,
   }) : super(key: key);
 
   @override
@@ -32,6 +36,24 @@ class _ProductWidgetState extends State<ProductWidget> {
     });
   }
 
+  void _showImageGallery(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Container(
+            height: 300,
+            child: PageView(
+              children: widget.imageGallery.map((image) {
+                return Image.asset(image, fit: BoxFit.cover);
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -44,15 +66,18 @@ class _ProductWidgetState extends State<ProductWidget> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 200,
-            height: 240,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(widget.imagePath),
-                fit: BoxFit.cover,
+          GestureDetector(
+            onTap: () => _showImageGallery(context), // Show gallery on tap
+            child: Container(
+              width: 200,
+              height: 240,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(widget.imagePath),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(2),
               ),
-              borderRadius: BorderRadius.circular(2),
             ),
           ),
           const SizedBox(width: 10),
@@ -100,6 +125,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                 ElevatedButton(
                   onPressed: () {
                     // Add to cart functionality
+                    widget.onAddToCart();
                   },
                   child: const Text('カートに入れる'),
                   style: ElevatedButton.styleFrom(
@@ -116,7 +142,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                   child: const Text('個別に期間を設定する'),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor:const Color(0xFF9E9E9E),
+                    backgroundColor: const Color(0xFF9E9E9E),
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
                   ),
                 ),
@@ -126,36 +152,6 @@ class _ProductWidgetState extends State<ProductWidget> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class ProductList extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        ProductWidget(
-          title: 'トランジット',
-          imagePath: 'asset/images/Transit.png',
-          basePrice: 1000,
-        ),
-        ProductWidget(
-          title: 'マイクロゲージ',
-          imagePath: 'asset/images/tripod.png',
-          basePrice: 1200,
-        ),
-        ProductWidget(
-          title: 'Product 3',
-          imagePath: 'asset/images/taper_guage.png',
-          basePrice: 1500,
-        ),
-        ProductWidget(
-          title: 'Product 3',
-          imagePath: 'asset/images/level.png',
-          basePrice: 1500,
-        ),
-      ],
     );
   }
 }

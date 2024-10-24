@@ -3,7 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
 import 'package:yotsuba_mobile/widgets/SearchFilters.dart';
 import 'package:yotsuba_mobile/widgets/ReservationBottomBar.dart';
-import 'package:yotsuba_mobile/widgets/ProductWidget.dart'; // Import ProductWidget
+import 'package:yotsuba_mobile/widgets/ProductWidget.dart';
+import 'package:yotsuba_mobile/widgets/GridToggleButton.dart';
+import 'package:yotsuba_mobile/widgets/CartDetailsDialog.dart';
 
 class NewReservationPage extends StatefulWidget {
   @override
@@ -13,8 +15,10 @@ class NewReservationPage extends StatefulWidget {
 class _NewReservationPageState extends State<NewReservationPage> {
   DateTime? _rentalDate;
   DateTime? _returnDate;
+  bool _isGridView = false;
   final TextEditingController _keywordController = TextEditingController();
-  final double _totalPrice = 5000; // Example price
+  double _totalPrice = 0;
+  final ShoppingCart cart = ShoppingCart(); // Create an instance of ShoppingCart
 
   Future<void> _selectDate(BuildContext context, bool isRentalDate) async {
     final DateTime? picked = await showDatePicker(
@@ -35,7 +39,17 @@ class _NewReservationPageState extends State<NewReservationPage> {
   }
 
   void _proceedToReservationConfirmation() {
+    if (_rentalDate == null || _returnDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('貸出日と返却日を選択してください')),
+      );
+      return;
+    }
     // Implement navigation to confirmation screen
+  }
+
+  void _updateTotalPrice() {
+    _totalPrice = cart.items.fold(0, (sum, product) => sum + product.price);
   }
 
   @override
@@ -44,109 +58,41 @@ class _NewReservationPageState extends State<NewReservationPage> {
       appBar: AppBar(
         title: const Text('新規予約', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
-        automaticallyImplyLeading: false,
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
+        actions: [
+          GridToggleButton(
+            isGridView: _isGridView,
+            onToggle: (newValue) {
+              setState(() {
+                _isGridView = newValue;
+              });
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Row for 貸出日 and 返却日
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // 貸出日
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '貸出日',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: () => _selectDate(context, true),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              _rentalDate != null
-                                  ? DateFormat('yyyy/MM/dd').format(_rentalDate!)
-                                  : 'Selected Date',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(width: 16),
-                            const Icon(Icons.calendar_month_rounded, size: 24),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                // 返却日
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '返却日',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: () => _selectDate(context, false),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              _returnDate != null
-                                  ? DateFormat('yyyy/MM/dd').format(_returnDate!)
-                                  : 'Selected Date',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(width: 16),
-                            const Icon(Icons.calendar_month_rounded, size: 24),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                _dateSelectionColumn('貸出日', _rentalDate, true),
+                _dateSelectionColumn('返却日', _returnDate, false),
               ],
             ),
-
             const SizedBox(height: 16),
-
-            // Combined CategoryDropdown and KeywordSearchBox
-            SearchFilters(
-              keywordController: _keywordController,
-            ),
-
+            SearchFilters(keywordController: _keywordController),
             const SizedBox(height: 16),
-
-            // ProductWidget - Product with timeline and options
             Expanded(
-              child: ProductList(),
+              child: _isGridView
+                  ? GridView.count(
+                crossAxisCount: 2,
+                children: _buildProductWidgets(),
+              )
+                  : ListView(children: _buildProductWidgets()),
             ),
           ],
         ),
@@ -154,16 +100,112 @@ class _NewReservationPageState extends State<NewReservationPage> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Use the new ReservationBottomBar widget
           ReservationBottomBar(
             totalPrice: _totalPrice,
             onProceed: _proceedToReservationConfirmation,
+            cart: cart, // Pass the cart instance here
           ),
-
-          // The original BottomNavBar
           BottomNavBar(selectedIndex: 1),
         ],
       ),
     );
+  }
+
+  Widget _dateSelectionColumn(String title, DateTime? date, bool isRentalDate) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black54,
+          ),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: () => _selectDate(context, isRentalDate),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  date != null ? DateFormat('yyyy/MM/dd').format(date) : 'Selected Date',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(width: 16),
+                const Icon(Icons.calendar_month_rounded, size: 24),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _buildProductWidgets() {
+    return [
+      ProductWidget(
+        title: 'トランジット',
+        imagePath: 'asset/images/Transit.png',
+        basePrice: 1000,
+        imageGallery: [
+          'asset/images/Transit.png',
+          'asset/images/Transit2.png',
+          'asset/images/Transit3.png',
+        ],
+        onAddToCart: () {
+          cart.addItem(CartProduct('トランジット', 1000)); // Add to cart
+          _updateTotalPrice();
+        },
+      ),
+      ProductWidget(
+        title: 'マイクロゲージ',
+        imagePath: 'asset/images/tripod.png',
+        basePrice: 1200,
+        imageGallery: [
+          'asset/images/Transit.png',
+          'asset/images/Transit2.png',
+          'asset/images/Transit3.png',
+        ],
+        onAddToCart: () {
+          cart.addItem(CartProduct('マイクロゲージ', 1200)); // Add to cart
+          _updateTotalPrice();
+        },
+      ),
+      ProductWidget(
+        title: 'Product 3',
+        imagePath: 'asset/images/taper_guage.png',
+        basePrice: 1500,
+        imageGallery: [
+          'asset/images/Transit.png',
+          'asset/images/Transit2.png',
+          'asset/images/Transit3.png',
+        ],
+        onAddToCart: () {
+          cart.addItem(CartProduct('Product 3', 1500)); // Add to cart
+          _updateTotalPrice();
+        },
+      ),
+      ProductWidget(
+        title: 'Product 4',
+        imagePath: 'asset/images/level.png',
+        basePrice: 1500,
+        imageGallery: [
+          'asset/images/Transit.png',
+          'asset/images/Transit2.png',
+          'asset/images/Transit3.png',
+        ],
+        onAddToCart: () {
+          cart.addItem(CartProduct('Product 4', 1500)); // Add to cart
+          _updateTotalPrice();
+        },
+      ),
+    ];
   }
 }
