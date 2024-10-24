@@ -5,9 +5,9 @@ class ProductWidget extends StatefulWidget {
   final String imagePath;
   final double basePrice;
   final List<String> imageGallery;
-  final VoidCallback onAddToCart;
+  final Function(int quantity) onAddToCart; // Changed to accept quantity
 
-  ProductWidget({
+  const ProductWidget({
     Key? key,
     required this.title,
     required this.imagePath,
@@ -118,14 +118,13 @@ class _ProductWidgetState extends State<ProductWidget> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '金額: ¥$_totalPrice',
+                  '金額: ¥${_totalPrice.toStringAsFixed(0)}',
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
-                    // Add to cart functionality
-                    widget.onAddToCart();
+                    widget.onAddToCart(_quantity); // Pass the quantity to the callback
                   },
                   child: const Text('カートに入れる'),
                   style: ElevatedButton.styleFrom(

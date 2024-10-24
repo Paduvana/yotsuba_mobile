@@ -49,7 +49,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
   }
 
   void _updateTotalPrice() {
-    _totalPrice = cart.items.fold(0, (sum, product) => sum + product.price);
+    _totalPrice = cart.items.fold(0, (sum, product) => sum + (product.price * product.quantity)); // Update total price calculation
   }
 
   @override
@@ -159,9 +159,15 @@ class _NewReservationPageState extends State<NewReservationPage> {
           'asset/images/Transit2.png',
           'asset/images/Transit3.png',
         ],
-        onAddToCart: () {
-          cart.addItem(CartProduct('トランジット', 1000)); // Add to cart
-          _updateTotalPrice();
+        onAddToCart: (quantity) { // Pass quantity
+          cart.addItem(CartProduct(
+            title: 'トランジット',
+            price: 1000,
+            quantity: quantity, // Use selected quantity
+            days: 3,
+            period: '2024/10/24 - 2024/10/27',
+          )); // Add to cart
+          _updateTotalPrice(); // Update total price after adding
         },
       ),
       ProductWidget(
@@ -173,9 +179,15 @@ class _NewReservationPageState extends State<NewReservationPage> {
           'asset/images/Transit2.png',
           'asset/images/Transit3.png',
         ],
-        onAddToCart: () {
-          cart.addItem(CartProduct('マイクロゲージ', 1200)); // Add to cart
-          _updateTotalPrice();
+        onAddToCart: (quantity) { // Pass quantity
+          cart.addItem(CartProduct(
+            title: 'マイクロゲージ',
+            price: 1200,
+            quantity: quantity, // Use selected quantity
+            days: 3,
+            period: '2024/10/24 - 2024/10/27',
+          )); // Add to cart
+          _updateTotalPrice(); // Update total price after adding
         },
       ),
       ProductWidget(
@@ -187,9 +199,15 @@ class _NewReservationPageState extends State<NewReservationPage> {
           'asset/images/Transit2.png',
           'asset/images/Transit3.png',
         ],
-        onAddToCart: () {
-          cart.addItem(CartProduct('Product 3', 1500)); // Add to cart
-          _updateTotalPrice();
+        onAddToCart: (quantity) { // Pass quantity
+          cart.addItem(CartProduct(
+            title: 'Product 3',
+            price: 1500,
+            quantity: quantity, // Use selected quantity
+            days: 3,
+            period: '2024/10/24 - 2024/10/27',
+          )); // Add to cart
+          _updateTotalPrice(); // Update total price after adding
         },
       ),
       ProductWidget(
@@ -201,9 +219,15 @@ class _NewReservationPageState extends State<NewReservationPage> {
           'asset/images/Transit2.png',
           'asset/images/Transit3.png',
         ],
-        onAddToCart: () {
-          cart.addItem(CartProduct('Product 4', 1500)); // Add to cart
-          _updateTotalPrice();
+        onAddToCart: (quantity) { // Pass quantity
+          cart.addItem(CartProduct(
+            title: 'Product 4',
+            price: 1500,
+            quantity: quantity, // Use selected quantity
+            days: 3,
+            period: '2024/10/24 - 2024/10/27',
+          )); // Add to cart
+          _updateTotalPrice(); // Update total price after adding
         },
       ),
     ];

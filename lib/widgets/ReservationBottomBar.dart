@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:yotsuba_mobile/widgets/ProductList.dart';
 import 'package:yotsuba_mobile/widgets/CartDetailsDialog.dart';
 
 class ReservationBottomBar extends StatelessWidget {
   final double totalPrice;
   final VoidCallback onProceed;
-  final ShoppingCart cart; // Holds the cart state
+  final ShoppingCart cart;
 
   const ReservationBottomBar({
     Key? key,
     required this.totalPrice,
     required this.onProceed,
-    required this.cart, // Include cart in constructor
+    required this.cart,
   }) : super(key: key);
 
   @override
@@ -33,9 +32,8 @@ class ReservationBottomBar extends StatelessWidget {
                     builder: (BuildContext context) {
                       return CartDetailsDialog(
                         cart: cart,
-                        onRemove: (CartProduct) {
-                          print('${CartProduct.title} removed from cart');
-                          cart.removeItem(CartProduct);
+                        onRemove: (CartProduct product) {
+                          cart.removeItem(product);
                           Navigator.of(context).pop(); // Close the dialog
                         },
                       );

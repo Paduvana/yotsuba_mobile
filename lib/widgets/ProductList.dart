@@ -29,7 +29,7 @@ class ProductWidget extends StatelessWidget {
   final String imagePath;
   final double basePrice;
   final List<String> imageGallery;
-  final VoidCallback onAddToCart;
+  final ValueChanged<int> onAddToCart;
 
   const ProductWidget({
     Key? key,
@@ -42,6 +42,8 @@ class ProductWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController quantityController = TextEditingController(); // Define the controller here
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -63,8 +65,17 @@ class ProductWidget extends StatelessWidget {
           const SizedBox(height: 8),
           Text('金額: ¥$basePrice', style: const TextStyle(fontSize: 16)),
           const SizedBox(height: 12),
+          TextField(
+            controller: quantityController,
+            decoration: const InputDecoration(labelText: '数量'),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 12),
           ElevatedButton(
-            onPressed: onAddToCart,
+            onPressed: () {
+              final int quantity = int.tryParse(quantityController.text) ?? 1; // Default to 1 if invalid
+              onAddToCart(quantity); // Pass the quantity
+            },
             child: const Text('カートに入れる'),
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
@@ -126,8 +137,9 @@ class ProductList extends StatefulWidget {
 class _ProductListState extends State<ProductList> {
   Cart cart = Cart();
 
-  void _addToCart(Product product) {
+  void _addToCart(Product product,int quantity) {
     setState(() {
+      for (int i = 0; i < quantity; i++)
       cart.addItem(product);
     });
     ScaffoldMessenger.of(context).showSnackBar(
@@ -179,7 +191,7 @@ class _ProductListState extends State<ProductList> {
               'asset/images/Transit2.png',
               'asset/images/Transit3.png',
             ],
-            onAddToCart: () => _addToCart(Product('トランジット', 1000)),
+            onAddToCart: (int quantity) => _addToCart(Product('トランジット', 1000), quantity),
           ),
           ProductWidget(
             title: 'マイクロゲージ',
@@ -189,7 +201,7 @@ class _ProductListState extends State<ProductList> {
               'asset/images/tripod.png',
               'asset/images/tripod2.png',
             ],
-            onAddToCart: () => _addToCart(Product('マイクロゲージ', 1200)),
+            onAddToCart: (int quantity) => _addToCart(Product('マイクロゲージ', 1200), quantity),
           ),
         ],
       ),
