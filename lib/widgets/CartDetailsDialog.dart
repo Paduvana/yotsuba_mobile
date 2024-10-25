@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ShoppingCart {
+class ShoppingCart  {
   List<CartProduct> items = [];
 
   void addItem(CartProduct product) {

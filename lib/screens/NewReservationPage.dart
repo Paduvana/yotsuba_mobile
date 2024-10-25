@@ -159,6 +159,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
           'asset/images/Transit2.png',
           'asset/images/Transit3.png',
         ],
+
         onAddToCart: (quantity) { // Pass quantity
           cart.addItem(CartProduct(
             title: 'トランジット',
