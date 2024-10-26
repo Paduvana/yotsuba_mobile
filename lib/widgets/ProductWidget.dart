@@ -23,6 +23,7 @@ class ProductWidget extends StatefulWidget {
 class _ProductWidgetState extends State<ProductWidget> {
   int _quantity = 1;
   late double _totalPrice;
+  bool _isAddedToCart = false; // New variable to track "Add to Cart" state
 
   @override
   void initState() {
@@ -60,7 +61,7 @@ class _ProductWidgetState extends State<ProductWidget> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFE0E0E0),
+          color: _isAddedToCart ? Colors.red[100] : const Color(0xFFE0E0E0), // Change color based on state
           border: Border.all(color: Colors.white),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -183,6 +184,9 @@ class _ProductWidgetState extends State<ProductWidget> {
                       const SizedBox(height: 12),
                       ElevatedButton(
                         onPressed: () {
+                          setState(() {
+                            _isAddedToCart = !_isAddedToCart; // Toggle state on button press
+                          });
                           widget.onAddToCart(_quantity);
                         },
                         child: const Text('カートに入れる'),
