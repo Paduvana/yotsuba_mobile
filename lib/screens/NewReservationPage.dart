@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:yotsuba_mobile/services/AuthService.dart';
+import 'package:yotsuba_mobile/services/DeviceService.dart';
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
 import 'package:yotsuba_mobile/widgets/SearchFilters.dart';
 import 'package:yotsuba_mobile/widgets/ReservationBottomBar.dart';
@@ -18,9 +20,60 @@ class _NewReservationPageState extends State<NewReservationPage> {
   bool _isGridView = false;
   final TextEditingController _keywordController = TextEditingController();
   double _totalPrice = 0;
-  final ShoppingCart cart = ShoppingCart(); // Create an instance of ShoppingCart
+  final ShoppingCart cart = ShoppingCart();
+  List<dynamic> _devices = []; // Store fetched devices
+  bool _isLoading = true; // Add loading state
 
-  Future<void> _selectDate(BuildContext context, bool isRentalDate) async {
+  final DeviceService deviceService = DeviceService(authService: AuthService()); // Initialize service
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDevices(); // Call the device fetch method
+  }
+
+  Future<void> _fetchDevices() async {
+    try {
+      final startDate = '2024-10-20'; // Replace with dynamic dates if needed
+      final endDate = '2024-10-21';
+      final category = 'Landscaping';
+      final search = '';
+
+      final response = await deviceService.fetchDeviceData(
+        context,
+        startDate: startDate,
+        endDate: endDate,
+        category: category,
+        search: search
+      );
+
+      setState(() {
+        _devices = response['devices'];
+        print(_devices);
+
+        _isLoading = false; // Stop loading once data is fetched
+      });
+    } catch (e) {
+      print("Error fetching devices: $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+void _proceedToReservationConfirmation() {
+    if (_rentalDate == null || _returnDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('貸出日と返却日を選択してください')),
+      );
+      return;
+    }
+    // Implement navigation to confirmation screen
+  }
+
+  void _updateTotalPrice() {
+    _totalPrice = cart.items.fold(0, (sum, product) => sum + (product.price * product.quantity)); // Update total price calculation
+  }
+Future<void> _selectDate(BuildContext context, bool isRentalDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -37,21 +90,6 @@ class _NewReservationPageState extends State<NewReservationPage> {
       });
     }
   }
-
-  void _proceedToReservationConfirmation() {
-    if (_rentalDate == null || _returnDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('貸出日と返却日を選択してください')),
-      );
-      return;
-    }
-    // Implement navigation to confirmation screen
-  }
-
-  void _updateTotalPrice() {
-    _totalPrice = cart.items.fold(0, (sum, product) => sum + (product.price * product.quantity)); // Update total price calculation
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,39 +109,41 @@ class _NewReservationPageState extends State<NewReservationPage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _dateSelectionColumn('貸出日', _rentalDate, true),
-                _dateSelectionColumn('返却日', _returnDate, false),
-              ],
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator()) // Show loader while fetching data
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _dateSelectionColumn('貸出日', _rentalDate, true),
+                      _dateSelectionColumn('返却日', _returnDate, false),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  SearchFilters(keywordController: _keywordController),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: _isGridView
+                        ? GridView.count(
+                            crossAxisCount: 2,
+                            children: _buildProductWidgets(),
+                          )
+                        : ListView(children: _buildProductWidgets()),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            SearchFilters(keywordController: _keywordController),
-            const SizedBox(height: 16),
-            Expanded(
-              child: _isGridView
-                  ? GridView.count(
-                crossAxisCount: 2,
-                children: _buildProductWidgets(),
-              )
-                  : ListView(children: _buildProductWidgets()),
-            ),
-          ],
-        ),
-      ),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ReservationBottomBar(
             totalPrice: _totalPrice,
             onProceed: _proceedToReservationConfirmation,
-            cart: cart, // Pass the cart instance here
+            cart: cart,
           ),
           BottomNavBar(selectedIndex: 1),
         ],
@@ -111,7 +151,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
     );
   }
 
-  Widget _dateSelectionColumn(String title, DateTime? date, bool isRentalDate) {
+Widget _dateSelectionColumn(String title, DateTime? date, bool isRentalDate) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -149,88 +189,47 @@ class _NewReservationPageState extends State<NewReservationPage> {
   }
 
   List<Widget> _buildProductWidgets() {
-    return [
-      ProductWidget(
-        title: 'トランジット',
-        imagePath: 'asset/images/Transit.png',
-        basePrice: 1000,
-        imageGallery: [
-          'asset/images/Transit.png',
-          'asset/images/Transit2.png',
-          'asset/images/Transit3.png',
-        ],
+  return _devices.map((device) {
+    // Check if essential fields are available, otherwise use default or skip
+    final deviceName = device['name'] ?? 'Unknown Device';
+    final devicePrice = double.tryParse(device['price'].toString()) ?? 0.0;
+    final imageGallery = (device['images'] as List<dynamic>?)
+        ?.map((img) => img['path'] as String?)
+        .whereType<String>()
+        .toList() ?? ['assets/images/default_image.png'];
 
-        onAddToCart: (quantity) { // Pass quantity
-          cart.addItem(CartProduct(
-            title: 'トランジット',
-            price: 1000,
-            quantity: quantity, // Use selected quantity
-            days: 3,
-            period: '2024/10/24 - 2024/10/27',
-          )); // Add to cart
-          _updateTotalPrice(); // Update total price after adding
-        },
-      ),
-      ProductWidget(
-        title: 'マイクロゲージ',
-        imagePath: 'asset/images/tripod.png',
-        basePrice: 1200,
-        imageGallery: [
-          'asset/images/Transit.png',
-          'asset/images/Transit2.png',
-          'asset/images/Transit3.png',
-        ],
-        onAddToCart: (quantity) { // Pass quantity
-          cart.addItem(CartProduct(
-            title: 'マイクロゲージ',
-            price: 1200,
-            quantity: quantity, // Use selected quantity
-            days: 3,
-            period: '2024/10/24 - 2024/10/27',
-          )); // Add to cart
-          _updateTotalPrice(); // Update total price after adding
-        },
-      ),
-      ProductWidget(
-        title: 'Product 3',
-        imagePath: 'asset/images/taper_guage.png',
-        basePrice: 1500,
-        imageGallery: [
-          'asset/images/Transit.png',
-          'asset/images/Transit2.png',
-          'asset/images/Transit3.png',
-        ],
-        onAddToCart: (quantity) { // Pass quantity
-          cart.addItem(CartProduct(
-            title: 'Product 3',
-            price: 1500,
-            quantity: quantity, // Use selected quantity
-            days: 3,
-            period: '2024/10/24 - 2024/10/27',
-          )); // Add to cart
-          _updateTotalPrice(); // Update total price after adding
-        },
-      ),
-      ProductWidget(
-        title: 'Product 4',
-        imagePath: 'asset/images/level.png',
-        basePrice: 1500,
-        imageGallery: [
-          'asset/images/Transit.png',
-          'asset/images/Transit2.png',
-          'asset/images/Transit3.png',
-        ],
-        onAddToCart: (quantity) { // Pass quantity
-          cart.addItem(CartProduct(
-            title: 'Product 4',
-            price: 1500,
-            quantity: quantity, // Use selected quantity
-            days: 3,
-            period: '2024/10/24 - 2024/10/27',
-          )); // Add to cart
-          _updateTotalPrice(); // Update total price after adding
-        },
-      ),
-    ];
-  }
+    // If any critical information like price is missing, handle accordingly
+    if (devicePrice == 0.0) {
+      print('Warning: Device "${deviceName}" has an invalid price.');
+      return const SizedBox.shrink(); // Return empty widget if the device is invalid
+    }
+
+    // Create ProductWidget if validations are passed
+    return ProductWidget(
+      title: deviceName,
+      imagePath: imageGallery.isNotEmpty ? imageGallery[0] : 'assets/images/default_image.png',
+      basePrice: devicePrice,
+      imageGallery: imageGallery,
+      onAddToCart: (quantity) {
+        // Perform additional validation on quantity if needed
+        if (quantity <= 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Invalid quantity selected for $deviceName')),
+          );
+          return;
+        }
+
+        cart.addItem(CartProduct(
+          title: deviceName,
+          price: devicePrice,
+          quantity: quantity,
+          days: 3,
+          period: '2024/12/24 - 2024/12/27',
+        ));
+        _updateTotalPrice();
+      },
+    );
+  }).toList();
+}
+
 }
