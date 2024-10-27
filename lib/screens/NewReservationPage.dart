@@ -34,10 +34,12 @@ class _NewReservationPageState extends State<NewReservationPage> {
 
   Future<void> _fetchDevices() async {
     try {
-      final startDate = '2024-10-20'; // Replace with dynamic dates if needed
-      final endDate = '2024-10-21';
-      final category = 'Landscaping';
-      final search = '';
+      final DateTime today = DateTime.now();
+      final String startDate = DateFormat('yyyy-MM-dd').format(today);
+      final DateTime tomorrow = today.add(const Duration(days: 1));
+      final String endDate = DateFormat('yyyy-MM-dd').format(tomorrow);
+      const category = '';
+      const search = '';
 
       final response = await deviceService.fetchDeviceData(
         context,
@@ -112,7 +114,7 @@ Future<void> _selectDate(BuildContext context, bool isRentalDate) async {
       body: _isLoading
           ? Center(child: CircularProgressIndicator()) // Show loader while fetching data
           : Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(4.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -197,7 +199,7 @@ Widget _dateSelectionColumn(String title, DateTime? date, bool isRentalDate) {
         ?.map((img) => img['path'] as String?)
         .whereType<String>()
         .toList() ?? ['assets/images/default_image.png'];
-
+    final availableCount = device['available_count'] ?? 1;
     // If any critical information like price is missing, handle accordingly
     if (devicePrice == 0.0) {
       print('Warning: Device "${deviceName}" has an invalid price.');
@@ -210,6 +212,7 @@ Widget _dateSelectionColumn(String title, DateTime? date, bool isRentalDate) {
       imagePath: imageGallery.isNotEmpty ? imageGallery[0] : 'assets/images/default_image.png',
       basePrice: devicePrice,
       imageGallery: imageGallery,
+      availableCount: availableCount,
       onAddToCart: (quantity) {
         // Perform additional validation on quantity if needed
         if (quantity <= 0) {

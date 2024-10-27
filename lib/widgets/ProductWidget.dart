@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class ProductWidget extends StatefulWidget {
   final String title;
   final String imagePath;
   final double basePrice;
   final List<String> imageGallery;
+  final int availableCount;
   final Function(int quantity) onAddToCart;
 
   const ProductWidget({
@@ -14,6 +14,7 @@ class ProductWidget extends StatefulWidget {
     required this.imagePath,
     required this.basePrice,
     required this.imageGallery,
+    required this.availableCount,
     required this.onAddToCart,
   }) : super(key: key);
 
@@ -61,81 +62,96 @@ class _ProductWidgetState extends State<ProductWidget> {
     );
   }
 
-@override
-Widget build(BuildContext context) {
-  return Container(
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      border: Border.all(color: Colors.grey.shade300),
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: [
-        BoxShadow(color: Colors.grey.withOpacity(0.2), blurRadius: 8, offset: Offset(0, 4)),
-      ],
-    ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Left Column for Image and Reservation Indicator with increased flex
-        Expanded(
-          flex: 3, // Increased flex to give more space
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => _showImageGallery(context),
-                child: Container(
-                  width: double.infinity,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey.shade200,
-                    image: DecorationImage(
-                      image: NetworkImage(widget.imagePath),
-                      fit: BoxFit.cover,
-                      onError: (_, __) => AssetImage('assets/images/default_image.png'),
-                    ),
+  @override
+  Widget build(BuildContext context) {
+    final bool isAvailable = widget.availableCount > 0;
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0), // Padding between widgets
+      child: Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isAvailable ? Colors.grey.shade300 :Colors.grey.shade700,
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(color: Colors.grey.withOpacity(0.2), blurRadius: 8, offset: Offset(0, 4)),
+              ],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left Column for Image and Reservation Indicator
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: isAvailable ? () => _showImageGallery(context) : null,
+                        child: Container(
+                          width: double.infinity,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: isAvailable ? Colors.grey.shade200 : Colors.grey.shade500,
+                            image: DecorationImage(
+                              image: NetworkImage(widget.imagePath),
+                              fit: BoxFit.cover,
+                              onError: (_, __) => const AssetImage('assets/images/default_image.png'),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildReservationIndicator(),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              _buildReservationIndicator(),
-            ],
+                
+                const SizedBox(width: 16), // Spacing between columns
+
+                // Right Column for Title, Quantity, Price, and Buttons
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.title,
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      _buildQuantitySelector(isAvailable),
+                      const SizedBox(height: 8),
+                      _buildPriceRow(),
+                      const SizedBox(height: 12),
+                      _buildAddToCartButton(isAvailable),
+                      const SizedBox(height: 14),
+                      _buildSetPeriodButton(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        
-        const SizedBox(width: 16), // Spacing between columns
-
-        // Right Column for Title, Quantity, Price, and Buttons with less flex
-        Expanded(
-          flex: 2, // Reduced flex to give less space
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                widget.title,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+          // Grey overlay if unavailable
+          if (!isAvailable)
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.6),
+                borderRadius: BorderRadius.circular(12),
               ),
-              const SizedBox(height: 8),
-              _buildQuantitySelector(),
-              const SizedBox(height: 8),
-              _buildPriceRow(),
-              const SizedBox(height: 12),
-              _buildAddToCartButton(),
-              const SizedBox(height: 14),
-              _buildSetPeriodButton(),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
+            ),
+        ],
+      ),
+    );
+  }
 
-
-
-  Widget _buildQuantitySelector() {
+  Widget _buildQuantitySelector(bool isAvailable) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -145,30 +161,38 @@ Widget build(BuildContext context) {
           width: 80,
           height: 25,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isAvailable ? Colors.white : Colors.grey.shade400,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<int>(
               value: _quantity,
-              onChanged: (int? newValue) {
+              onChanged: widget.availableCount > 0 ? (int? newValue) {
                 if (newValue != null) {
                   setState(() {
                     _quantity = newValue;
                     _updatePrice(_quantity);
                   });
                 }
-              },
+              } : null,
               dropdownColor: Colors.white,
               style: const TextStyle(color: Colors.black),
               isExpanded: true,
               alignment: Alignment.center,
               icon: const Icon(Icons.keyboard_arrow_down_sharp, color: Colors.grey),
-              items: List.generate(10, (index) => index + 1).map<DropdownMenuItem<int>>((int value) {
+              items: List.generate(
+                widget.availableCount,
+                (index) => index + 1,
+              ).map((value) {
                 return DropdownMenuItem<int>(
                   value: value,
-                  child: Center(child: Text('$value', style: const TextStyle(color: Colors.black))),
+                  child: Center(
+                    child: Text(
+                      '$value',
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  ),
                 );
               }).toList(),
             ),
@@ -203,18 +227,21 @@ Widget build(BuildContext context) {
     );
   }
 
-  Widget _buildAddToCartButton() {
+  Widget _buildAddToCartButton(bool isAvailable) {
     return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          _isAddedToCart = !_isAddedToCart;
-        });
-        widget.onAddToCart(_quantity);
-      },
+      onPressed: isAvailable
+          ? () {
+              setState(() {
+                _isAddedToCart = !_isAddedToCart;
+              });
+              widget.onAddToCart(_quantity);
+            }
+          : null,
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white, backgroundColor: Colors.teal,
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
         textStyle: const TextStyle(fontSize: 16),
+        disabledBackgroundColor: const Color.fromARGB(255, 71, 94, 92),
       ),
       child: const Text('カートに入れる'),
     );
@@ -250,7 +277,7 @@ Widget build(BuildContext context) {
           const SizedBox(height: 8),
           Row(
             children: List.generate(30, (index) {
-              bool isReserved = index % 5 == 0; // Example reserved dates
+              bool isReserved = index % 5 == 0;
               return Expanded(
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 0.5),
