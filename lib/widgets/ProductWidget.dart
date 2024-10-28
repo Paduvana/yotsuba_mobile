@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yotsuba_mobile/widgets/SetPeriodDialog.dart';
 
 class ProductWidget extends StatefulWidget {
   final String title;
@@ -252,8 +253,11 @@ class _ProductWidgetState extends State<ProductWidget> {
   Widget _buildSetPeriodButton() {
     return OutlinedButton(
       onPressed: () {
-        // Set period functionality
-      },
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => SetPeriodDialog(machineName: widget.title),
+        );
+        },
       style: OutlinedButton.styleFrom(
         foregroundColor: Colors.white, backgroundColor: Colors.grey.shade500,
         side: const BorderSide(color: Colors.grey),
