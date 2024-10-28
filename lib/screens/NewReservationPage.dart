@@ -32,26 +32,24 @@ class _NewReservationPageState extends State<NewReservationPage> {
     _fetchDevices(); // Call the device fetch method
   }
 
-  Future<void> _fetchDevices() async {
+  Future<void> _fetchDevices({String? startDate, String? endDate}) async {
     try {
-      final DateTime today = DateTime.now();
-      final String startDate = DateFormat('yyyy-MM-dd').format(today);
-      final DateTime tomorrow = today.add(const Duration(days: 1));
-      final String endDate = DateFormat('yyyy-MM-dd').format(tomorrow);
+      final String selectedStartDate = startDate ?? DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final String selectedEndDate = endDate ?? DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 1)));
       const category = '';
       const search = '';
 
       final response = await deviceService.fetchDeviceData(
         context,
-        startDate: startDate,
-        endDate: endDate,
+        startDate: selectedStartDate,
+        endDate: selectedEndDate,
         category: category,
         search: search
       );
 
       setState(() {
         _devices = response['devices'];
-        print(_devices);
+        //print(_devices);
 
         _isLoading = false; // Stop loading once data is fetched
       });
@@ -90,6 +88,12 @@ Future<void> _selectDate(BuildContext context, bool isRentalDate) async {
           _returnDate = picked;
         }
       });
+      // Call _fetchDevices with updated dates
+      if (_rentalDate != null && _returnDate != null) {
+        final String startDate = DateFormat('yyyy-MM-dd').format(_rentalDate!);
+        final String endDate = DateFormat('yyyy-MM-dd').format(_returnDate!);
+        _fetchDevices(startDate: startDate, endDate: endDate);
+      }
     }
   }
   @override
