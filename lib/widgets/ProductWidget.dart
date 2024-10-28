@@ -75,7 +75,7 @@ class _ProductWidgetState extends State<ProductWidget> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: isAvailable ? Colors.grey.shade300 :Colors.grey.shade700,
+              color: _isAddedToCart ? Colors.blue.shade100 : (isAvailable ? Colors.grey.shade300 : Colors.grey.shade700),
               border: Border.all(color: Colors.grey.shade300),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
