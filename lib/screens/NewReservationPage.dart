@@ -29,35 +29,61 @@ class _NewReservationPageState extends State<NewReservationPage> {
   @override
   void initState() {
     super.initState();
-    _fetchDevices(); // Call the device fetch method
+    _fetchInitialDevices(); // Call the device fetch method
   }
 
-  Future<void> _fetchDevices({String? startDate, String? endDate}) async {
+    Future<void> _fetchDevices({String? startDate, String? endDate}) async {
     try {
-      final String selectedStartDate = startDate ?? DateFormat('yyyy-MM-dd').format(DateTime.now());
-      final String selectedEndDate = endDate ?? DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 1)));
+      setState(() {
+        _isLoading = true;
+        _devices = []; // Clear existing devices while loading
+      });
+
       const category = '';
-      const search = '';
+      final search = _keywordController.text;
 
       final response = await deviceService.fetchDeviceData(
         context,
-        startDate: selectedStartDate,
-        endDate: selectedEndDate,
+        startDate: startDate!,
+        endDate: endDate!,
         category: category,
         search: search
       );
 
       setState(() {
         _devices = response['devices'];
-        _isLoading = false; // Stop loading once data is fetched
+        _isLoading = false;
       });
     } catch (e) {
       print("Error fetching devices: $e");
       setState(() {
         _isLoading = false;
       });
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('デバイスの取得中にエラーが発生しました。'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
+
+  Future<void> _fetchInitialDevices() async {
+    try {
+      final DateTime today = DateTime.now();
+      final String startDate = DateFormat('yyyy-MM-dd').format(today);
+      final DateTime tomorrow = today.add(const Duration(days: 1));
+      final String endDate = DateFormat('yyyy-MM-dd').format(tomorrow);
+      
+      await _fetchDevices(startDate: startDate, endDate: endDate);
+    } catch (e) {
+      print("Error in initial fetch: $e");
+    }
+  }
+
 void _proceedToReservationConfirmation() {
     if (_rentalDate == null || _returnDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -71,27 +97,55 @@ void _proceedToReservationConfirmation() {
   void _updateTotalPrice() {
     _totalPrice = cart.items.fold(0, (sum, product) => sum + (product.price * product.quantity)); // Update total price calculation
   }
-Future<void> _selectDate(BuildContext context, bool isRentalDate) async {
+
+   void _checkAndFetchDevices() {
+    if (_rentalDate != null && _returnDate != null) {
+      final String startDate = DateFormat('yyyy-MM-dd').format(_rentalDate!);
+      final String endDate = DateFormat('yyyy-MM-dd').format(_returnDate!);
+      //cart.clear();
+      _updateTotalPrice();
+      
+      _fetchDevices(startDate: startDate, endDate: endDate);
+    }
+  }
+
+ Future<void> _selectDate(BuildContext context, bool isRentalDate) async {
+    DateTime initialDate;
+    DateTime firstDate;
+    DateTime lastDate;
+
+    if (isRentalDate) {
+      initialDate = _rentalDate ?? DateTime.now();
+      firstDate = DateTime.now();
+      lastDate = _returnDate ?? DateTime(2101);
+    } else {
+      initialDate = _returnDate ?? (_rentalDate?.add(const Duration(days: 1)) ?? DateTime.now().add(const Duration(days: 1)));
+      firstDate = _rentalDate?.add(const Duration(days: 1)) ?? DateTime.now();
+      lastDate = DateTime(2101);
+    }
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      initialDate: initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
     );
+
     if (picked != null) {
       setState(() {
         if (isRentalDate) {
           _rentalDate = picked;
+          // Reset return date if it's before the new rental date
+          if (_returnDate != null && _returnDate!.isBefore(picked)) {
+            _returnDate = null;
+          }
         } else {
           _returnDate = picked;
         }
       });
-      // Call _fetchDevices with updated dates
-      if (_rentalDate != null && _returnDate != null) {
-        final String startDate = DateFormat('yyyy-MM-dd').format(_rentalDate!);
-        final String endDate = DateFormat('yyyy-MM-dd').format(_returnDate!);
-        _fetchDevices(startDate: startDate, endDate: endDate);
-      }
+
+      // Check and fetch only when both dates are selected
+      _checkAndFetchDevices();
     }
   }
   @override
@@ -175,12 +229,16 @@ Widget _dateSelectionColumn(String title, DateTime? date, bool isRentalDate) {
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(8),
+              color: Colors.white,
             ),
             child: Row(
               children: [
                 Text(
-                  date != null ? DateFormat('yyyy/MM/dd').format(date) : 'Selected Date',
-                  style: const TextStyle(fontSize: 16),
+                  date != null ? DateFormat('yyyy/MM/dd').format(date) : '日付を選択',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: date != null ? Colors.black : Colors.grey,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 const Icon(Icons.calendar_month_rounded, size: 24),
@@ -188,6 +246,17 @@ Widget _dateSelectionColumn(String title, DateTime? date, bool isRentalDate) {
             ),
           ),
         ),
+        if (isRentalDate && _rentalDate != null && _returnDate == null)
+          const Padding(
+            padding: EdgeInsets.only(top: 4),
+            child: Text(
+              '返却日を選択してください',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.blue,
+              ),
+            ),
+          ),
       ],
     );
   }
