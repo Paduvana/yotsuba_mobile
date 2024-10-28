@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yotsuba_mobile/services/APIConstants.dart';
 import 'package:yotsuba_mobile/widgets/SetPeriodDialog.dart';
 
 class ProductWidget extends StatefulWidget {
@@ -106,10 +107,10 @@ void _showImageGallery(BuildContext context) {
       },
     );
   }
-
   Widget _buildNetworkImage(String imageUrl) {
+    print(ApiConstants.getImageUrl(imageUrl));
     return Image.network(
-      imageUrl,
+      ApiConstants.getImageUrl(imageUrl),
       fit: BoxFit.cover,
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
@@ -173,7 +174,7 @@ void _showImageGallery(BuildContext context) {
                             borderRadius: BorderRadius.circular(8),
                             color: isAvailable ? Colors.grey.shade200 : Colors.grey.shade500,
                             image: DecorationImage(
-                              image: NetworkImage(widget.imagePath),
+                              image: NetworkImage(ApiConstants.getImageUrl(widget.imagePath)),
                               fit: BoxFit.cover,
                               onError: (_, __) => const AssetImage('assets/images/default_image.png'),
                             ),
