@@ -6,6 +6,7 @@ class ProductWidget extends StatefulWidget {
   final double basePrice;
   final List<String> imageGallery;
   final int availableCount;
+  final List<dynamic> reservedDates; 
   final Function(int quantity) onAddToCart;
 
   const ProductWidget({
@@ -15,6 +16,7 @@ class ProductWidget extends StatefulWidget {
     required this.basePrice,
     required this.imageGallery,
     required this.availableCount,
+    required this.reservedDates,
     required this.onAddToCart,
   }) : super(key: key);
 
@@ -259,8 +261,35 @@ class _ProductWidgetState extends State<ProductWidget> {
       child: const Text('個別に期間を設定する'),
     );
   }
+List<DateTime> _parseReservedDates(List<dynamic> reservedDates) {
+  List<DateTime> allReservedDates = [];
 
-  Widget _buildReservationIndicator() {
+  for (var dateEntry in reservedDates) {
+    try {
+      if (dateEntry.contains(',')) {
+        List<String> dateRange = dateEntry.split(',');
+        DateTime startDate = DateTime.parse(dateRange[0]);
+        DateTime endDate = DateTime.parse(dateRange[1]);
+
+        for (DateTime date = startDate; date.isBefore(endDate.add(Duration(days: 1))); date = date.add(Duration(days: 1))) {
+          allReservedDates.add(date);
+        }
+      } else {
+        DateTime singleDate = DateTime.parse(dateEntry);
+        allReservedDates.add(singleDate);
+      }
+    } catch (e) {
+      print("Invalid date format in reserved dates: $e");
+    }
+  }
+
+  return allReservedDates.toSet().toList(); // Remove duplicates if any
+}
+
+Widget _buildReservationIndicator() {
+    DateTime today = DateTime.now();
+    List<DateTime> reservedDates =_parseReservedDates(widget.reservedDates);
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4),
       color: Colors.grey[600],
@@ -277,7 +306,12 @@ class _ProductWidgetState extends State<ProductWidget> {
           const SizedBox(height: 8),
           Row(
             children: List.generate(30, (index) {
-              bool isReserved = index % 5 == 0;
+              DateTime currentDate = today.add(Duration(days: index));
+              bool isReserved = reservedDates.any((reservedDate) =>
+                  reservedDate.year == currentDate.year &&
+                  reservedDate.month == currentDate.month &&
+                  reservedDate.day == currentDate.day);
+
               return Expanded(
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 0.5),
@@ -295,6 +329,7 @@ class _ProductWidgetState extends State<ProductWidget> {
       ),
     );
   }
+
 
   Widget _buildIndicator(Color color, String text) {
     return Row(

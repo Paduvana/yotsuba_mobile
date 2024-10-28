@@ -194,6 +194,7 @@ Widget _dateSelectionColumn(String title, DateTime? date, bool isRentalDate) {
   return _devices.map((device) {
     // Check if essential fields are available, otherwise use default or skip
     final deviceName = device['name'] ?? 'Unknown Device';
+    final reservedDates = device['reserved_dates'] ?? [];
     final devicePrice = double.tryParse(device['price'].toString()) ?? 0.0;
     final imageGallery = (device['images'] as List<dynamic>?)
         ?.map((img) => img['path'] as String?)
@@ -213,6 +214,7 @@ Widget _dateSelectionColumn(String title, DateTime? date, bool isRentalDate) {
       basePrice: devicePrice,
       imageGallery: imageGallery,
       availableCount: availableCount,
+      reservedDates: reservedDates,
       onAddToCart: (quantity) {
         // Perform additional validation on quantity if needed
         if (quantity <= 0) {

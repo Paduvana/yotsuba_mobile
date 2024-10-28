@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:yotsuba_mobile/screens/Login.dart';
 import 'package:yotsuba_mobile/services/APIConstants.dart';
+import 'dart:typed_data';
 
 class AuthService {
   // Create storage
@@ -79,13 +80,13 @@ class AuthService {
   Future<http.Response> _makeHttpRequest(Uri url, String method,
       String? accessToken, Map<String, dynamic>? body) async {
     final headers = {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json; charset=UTF-8',
       if (accessToken != null) 'Authorization': 'Bearer $accessToken',
     };
 
     if (method == 'POST') {
       return await http.post(url,
-          headers: headers, body: jsonEncode(body));
+          headers: headers, body: jsonEncode(body),encoding: Encoding.getByName('utf-8'),);
     } else {
       return await http.get(url, headers: headers);
     }
