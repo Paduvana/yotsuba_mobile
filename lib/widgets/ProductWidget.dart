@@ -29,11 +29,13 @@ class _ProductWidgetState extends State<ProductWidget> {
   int _quantity = 1;
   late double _totalPrice;
   bool _isAddedToCart = false;
+  int _currentImageIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _totalPrice = widget.basePrice;
+    _quantity = widget.availableCount > 0 ? 1 : 0;
   }
 
   void _updatePrice(int quantity) {
@@ -42,28 +44,98 @@ class _ProductWidgetState extends State<ProductWidget> {
     });
   }
 
-  void _showImageGallery(BuildContext context) {
+void _showImageGallery(BuildContext context) {
+    if (widget.imageGallery.isEmpty) return;
+    
     showDialog(
       context: context,
       builder: (context) {
         return Dialog(
           child: SizedBox(
             height: 300,
-            child: PageView(
-              children: widget.imageGallery.map((image) {
-                return Image.network(
-                  image,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.camera_alt, size: 50, color: Colors.grey),
-                );
-              }).toList(),
+            child: Stack(
+              children: [
+                PageView.builder(
+                  itemCount: widget.imageGallery.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentImageIndex = index;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    return _buildNetworkImage(widget.imageGallery[index]);
+                  },
+                ),
+                // Close button
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+                // Page indicator
+                if (widget.imageGallery.length > 1)
+                  Positioned(
+                    bottom: 16,
+                    left: 0,
+                    right: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        widget.imageGallery.length,
+                        (index) => Container(
+                          width: 8,
+                          height: 8,
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _currentImageIndex == index
+                                ? Colors.white
+                                : Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         );
       },
     );
   }
+
+  Widget _buildNetworkImage(String imageUrl) {
+    return Image.network(
+      imageUrl,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Center(
+          child: CircularProgressIndicator(
+            value: loadingProgress.expectedTotalBytes != null
+                ? loadingProgress.cumulativeBytesLoaded /
+                    loadingProgress.expectedTotalBytes!
+                : null,
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        print('Error loading image: $error');
+        return Container(
+          color: Colors.grey[300],
+          child: const Icon(
+            Icons.image_not_supported,
+            size: 50,
+            color: Colors.grey,
+          ),
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +165,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       GestureDetector(
-                        onTap: isAvailable ? () => _showImageGallery(context) : null,
+                        onTap: isAvailable && widget.imageGallery.isNotEmpty ? () => _showImageGallery(context) : null,
                         child: Container(
                           width: double.infinity,
                           height: 150,
@@ -155,6 +227,16 @@ class _ProductWidgetState extends State<ProductWidget> {
   }
 
   Widget _buildQuantitySelector(bool isAvailable) {
+    // Ensure we have valid items for the dropdown
+    final List<int> availableQuantities = isAvailable && widget.availableCount > 0
+        ? List<int>.generate(widget.availableCount, (index) => index + 1)
+        : [0];
+
+    // Ensure _quantity is in the available range
+    if (!availableQuantities.contains(_quantity)) {
+      _quantity = availableQuantities.first;
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -171,7 +253,7 @@ class _ProductWidgetState extends State<ProductWidget> {
           child: DropdownButtonHideUnderline(
             child: DropdownButton<int>(
               value: _quantity,
-              onChanged: widget.availableCount > 0 ? (int? newValue) {
+              onChanged: isAvailable ? (int? newValue) {
                 if (newValue != null) {
                   setState(() {
                     _quantity = newValue;
@@ -184,16 +266,15 @@ class _ProductWidgetState extends State<ProductWidget> {
               isExpanded: true,
               alignment: Alignment.center,
               icon: const Icon(Icons.keyboard_arrow_down_sharp, color: Colors.grey),
-              items: List.generate(
-                widget.availableCount,
-                (index) => index + 1,
-              ).map((value) {
+              items: availableQuantities.map((int value) {
                 return DropdownMenuItem<int>(
                   value: value,
                   child: Center(
                     child: Text(
-                      '$value',
-                      style: const TextStyle(color: Colors.black),
+                      value.toString(),
+                      style: TextStyle(
+                        color: isAvailable ? Colors.black : Colors.grey,
+                      ),
                     ),
                   ),
                 );
@@ -204,7 +285,6 @@ class _ProductWidgetState extends State<ProductWidget> {
       ],
     );
   }
-
   Widget _buildPriceRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

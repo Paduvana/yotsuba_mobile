@@ -16,14 +16,13 @@ class ReservationService {
     try {
       final response = await authService.makeAuthenticatedRequest(url, context);
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        return jsonDecode(utf8.decode(response.bodyBytes));
       } else {
         throw Exception('Failed to load reservation data: ${response.reasonPhrase}');
       }
     } catch (e) {
-      // Log the error (You can replace this with a logging framework)
       print('Error fetching reservation data: $e');
-      rethrow; // Rethrow to handle it in the UI
+      rethrow; 
     }
   }
 }
