@@ -6,4 +6,5 @@ class ApiConstants {
   static const String reservationEndpoint = '$baseUrl/reservations/';
   static const String passwordReissueEndpoint = '$baseUrl/forgot-password/';
   static const String deviceListEndpoint = '$baseUrl/devices/';
+  static String userProfile(String userId) => '$baseUrl/users/$userId/profile/';
 }
