@@ -51,7 +51,6 @@ class _NewReservationPageState extends State<NewReservationPage> {
 
       setState(() {
         _devices = response['devices'];
-        print(_devices);
 
         _isLoading = false; // Stop loading once data is fetched
       });

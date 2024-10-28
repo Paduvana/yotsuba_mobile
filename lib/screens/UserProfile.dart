@@ -50,6 +50,7 @@ Future<void> _loadUserData() async {
 
     final userData = await _userProfileService.fetchUserProfileData(context);
     setState(() {
+      print(userData);
       _nameController.text = userData['name'] ?? '';
       _emailController.text = userData['email'] ?? '';
       _passwordController.clear(); // Clear password field

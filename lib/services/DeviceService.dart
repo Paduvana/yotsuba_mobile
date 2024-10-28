@@ -26,7 +26,7 @@ class DeviceService {
     try {
       final response = await authService.makeAuthenticatedRequest(url, context);
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        return jsonDecode(utf8.decode(response.bodyBytes));
       } else {
         throw Exception('Failed to load devices data: ${response.reasonPhrase}');
       }
