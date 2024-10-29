@@ -17,7 +17,12 @@ class GridToggleButton extends StatefulWidget {
 class _GridToggleButtonState extends State<GridToggleButton> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    // Return an empty widget for now to hide the button
+    return SizedBox.shrink();
+  }
+  }
+
+    /*return Container(
       decoration: BoxDecoration(
         color: Color(0xFFECE8E8),
         borderRadius: BorderRadius.circular(18.0),
@@ -39,4 +44,4 @@ class _GridToggleButtonState extends State<GridToggleButton> {
       ),
     );
   }
-}
+}*/
