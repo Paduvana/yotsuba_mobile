@@ -17,7 +17,9 @@ dependencies:
   table_calendar: ^3.0.0
   permission_handler: ^11.0.0
   device_info_plus: ^9.0.0
+
 dev_dependencies:
+  flutter_launcher_icons: ^0.11.0
   flutter_test:
     sdk: flutter
 
@@ -37,3 +39,13 @@ flutter:
     - asset/images/tripod.png
     - asset/images/taper_guage.png
     - asset/images/level.png
+    - asset/images/シャアBO ロゴ .png
+
+flutter_icons:
+  android: true
+  ios: true
+  web: true
+  windows: true
+  macos: true
+  remove_alpha_ios: true
+  image_path: "asset/images/シャアBO ロゴ .png"
