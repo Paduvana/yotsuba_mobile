@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yotsuba_mobile/screens/Dashboard.dart';
 import 'package:yotsuba_mobile/screens/UserProfile.dart';
+import '../screens/NewReservationPage.dart';
 import '../screens/ReservationList.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -17,16 +18,19 @@ class BottomNavBar extends StatelessWidget {
         );
         break;
       case 1:
-        // Implement navigation for "新規予約" tab if applicable
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) =>  NewReservationPage()), // Navigate to the NewReservation page
+        );
         break;
       case 2:
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const ReservationList()),
         );
         break;
       case 3:
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const UserProfile()),
         );

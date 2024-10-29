@@ -27,9 +27,11 @@ Future<LoginResult> loginService(
       final data = jsonDecode(utf8.decode(response.bodyBytes));
       final String? accessToken = data['access_token'];
       final String? refreshToken = data['refresh_token'];
+      final String? userCd = data['cd'];
 
-      if (accessToken != null && refreshToken != null) {
+      if (accessToken != null && refreshToken != null && userCd != null) {
         await AuthService().storeToken(accessToken, refreshToken);
+        await AuthService().storeUser(userCd);
         return LoginResult.success;
       } else {
         _showErrorDialog(context, 'Failed to retrieve authentication tokens.');
