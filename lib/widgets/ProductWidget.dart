@@ -3,16 +3,19 @@ import 'package:yotsuba_mobile/services/APIConstants.dart';
 import 'package:yotsuba_mobile/widgets/SetPeriodDialog.dart';
 
 class ProductWidget extends StatefulWidget {
+  final int deviceId;
   final String title;
   final String imagePath;
   final double basePrice;
   final List<String> imageGallery;
   final int availableCount;
-  final List<dynamic> reservedDates; 
+  final List<dynamic> reservedDates;
   final Function(int quantity) onAddToCart;
+  final bool isInCart;
 
   const ProductWidget({
     Key? key,
+    required this.deviceId,
     required this.title,
     required this.imagePath,
     required this.basePrice,
@@ -20,6 +23,7 @@ class ProductWidget extends StatefulWidget {
     required this.availableCount,
     required this.reservedDates,
     required this.onAddToCart,
+    required this.isInCart,
   }) : super(key: key);
 
   @override
@@ -37,8 +41,17 @@ class _ProductWidgetState extends State<ProductWidget> {
     super.initState();
     _totalPrice = widget.basePrice;
     _quantity = widget.availableCount > 0 ? 1 : 0;
+     _isAddedToCart = widget.isInCart;
   }
-
+  @override
+  void didUpdateWidget(ProductWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isInCart != widget.isInCart) {
+      setState(() {
+        _isAddedToCart = widget.isInCart;
+      });
+    }
+  }
   void _updatePrice(int quantity) {
     setState(() {
       _totalPrice = widget.basePrice * quantity;
@@ -322,12 +335,13 @@ void _showImageGallery(BuildContext context) {
             }
           : null,
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white, backgroundColor: Colors.teal,
+        foregroundColor: Colors.white,
+        backgroundColor: _isAddedToCart ? Colors.blue : Colors.teal,
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
         textStyle: const TextStyle(fontSize: 16),
         disabledBackgroundColor: const Color.fromARGB(255, 71, 94, 92),
       ),
-      child: const Text('カートに入れる'),
+      child: Text(_isAddedToCart ? 'カートから外す' : 'カートに入れる'),
     );
   }
 

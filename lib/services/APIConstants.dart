@@ -7,6 +7,7 @@ class ApiConstants {
   static const String reservationEndpoint = '$baseUrl/reservations/';
   static const String passwordReissueEndpoint = '$baseUrl/forgot-password/';
   static const String deviceListEndpoint = '$baseUrl/devices/';
+  static const String cartEndpoint = '$baseUrl/cart/';
   static String userProfile(String userId) => '$baseUrl/users/$userId/profile/';
   static String getImageUrl(String imagePath) {
     if (imagePath.startsWith('http')) {

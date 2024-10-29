@@ -1,38 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:yotsuba_mobile/models/CartModels.dart';
 
-class ShoppingCart  {
-  List<CartProduct> items = [];
-
-  void addItem(CartProduct product) {
-    items.add(product);
-  }
-
-  void removeItem(CartProduct product) {
-    items.remove(product);
-  }
-
-  double get total => items.fold(0, (sum, item) => sum + item.subtotal); // Updated total calculation
-
-  double get consumptionTax => total * 0.1; // Assuming 10% tax
-}
-
-class CartProduct {
-  final String title;
-  final double price;
-  int quantity; // Changed to allow updating
-  final int days;
-  final String period;
-
-  CartProduct({
-    required this.title,
-    required this.price,
-    this.quantity = 1,
-    required this.days,
-    required this.period,
-  });
-
-  double get subtotal => price * quantity * days; // Correct subtotal calculation
-}
 
 class CartDetailsDialog extends StatelessWidget {
   final ShoppingCart cart;
@@ -81,11 +49,27 @@ class CartDetailsDialog extends StatelessWidget {
             // Table Headers
             const Row(
               children: [
-                Expanded(flex: 2, child: Text('機器/期間', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
-                Expanded(child: Text('数量', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
-                Expanded(child: Text('単価', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
-                Expanded(child: Text('日数', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
-                Expanded(child: Text('金額', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
+                Expanded(
+                    flex: 2,
+                    child: Text('機器/期間',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold))),
+                Expanded(
+                    child: Text('数量',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold))),
+                Expanded(
+                    child: Text('単価',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold))),
+                Expanded(
+                    child: Text('日数',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold))),
+                Expanded(
+                    child: Text('金額',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold))),
               ],
             ),
             const SizedBox(height: 10),
@@ -100,26 +84,32 @@ class CartDetailsDialog extends StatelessWidget {
                   return Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.cancel, color: Colors.black), // Use cancel icon
+                        icon: const Icon(Icons.cancel,
+                            color: Colors.black), // Use cancel icon
                         onPressed: () {
                           onRemove(product); // Call the remove function
                         },
                       ),
                       Expanded(
                         flex: 2,
-                        child: Text('${product.title}\n${product.period}', style: const TextStyle(fontSize: 14.0)),
+                        child: Text('${product.title}\n${product.period}',
+                            style: const TextStyle(fontSize: 14.0)),
                       ),
                       Expanded(
-                        child: Text('${product.quantity}', style: const TextStyle(fontSize: 14.0)),
+                        child: Text('${product.quantity}',
+                            style: const TextStyle(fontSize: 14.0)),
                       ),
                       Expanded(
-                        child: Text('¥${product.price.toStringAsFixed(0)}', style: const TextStyle(fontSize: 14.0)),
+                        child: Text('¥${product.price.toStringAsFixed(0)}',
+                            style: const TextStyle(fontSize: 14.0)),
                       ),
                       Expanded(
-                        child: Text('${product.days}', style: const TextStyle(fontSize: 14.0)),
+                        child: Text('${product.days}',
+                            style: const TextStyle(fontSize: 14.0)),
                       ),
                       Expanded(
-                        child: Text('¥${product.subtotal.toStringAsFixed(0)}', style: const TextStyle(fontSize: 14.0)),
+                        child: Text('¥${product.subtotal.toStringAsFixed(0)}',
+                            style: const TextStyle(fontSize: 14.0)),
                       ),
                     ],
                   );
@@ -134,16 +124,22 @@ class CartDetailsDialog extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('消費税', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    const Text('消費税',
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey)),
                     Container(
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
                       child: Text(
                         '¥${cart.consumptionTax.toStringAsFixed(0)}',
-                        style: const TextStyle(fontSize: 16.0, color: Colors.black),
+                        style: const TextStyle(
+                            fontSize: 16.0, color: Colors.black),
                       ),
                     ),
                   ],
@@ -152,16 +148,22 @@ class CartDetailsDialog extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('合計（税込）', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    const Text('合計（税込）',
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey)),
                     Container(
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
                       child: Text(
                         '¥${(cart.total + cart.consumptionTax).toStringAsFixed(0)}',
-                        style: const TextStyle(fontSize: 16.0, color: Colors.black),
+                        style: const TextStyle(
+                            fontSize: 16.0, color: Colors.black),
                       ),
                     ),
                   ],
