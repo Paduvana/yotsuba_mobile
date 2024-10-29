@@ -22,13 +22,13 @@ class CartService {
         method: 'POST',
         body: jsonItems,
       );
-
-      if (response.statusCode != 200) {
-        throw Exception('Checkout failed: ${response.reasonPhrase}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        await _clearStoredCart();
+        return;
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['detail'] ?? 'Checkout failed');
       }
-
-      // Clear cart after successful checkout
-      await _clearStoredCart();
     } catch (e) {
       print('Checkout error: $e');
       rethrow;

@@ -158,101 +158,33 @@ class _NewReservationPageState extends State<NewReservationPage> {
     });
   }
 
-  bool _isItemInCart(int deviceId) {
-    return cart.items.any((item) => item.deviceId == deviceId);
-  }
-
-  Widget _buildCartItemsList() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: cart.items
-          .map((item) => Card(
-                margin: const EdgeInsets.symmetric(vertical: 4),
-                child: ListTile(
-                  title: Text(item.name),
-                  subtitle: Text(
-                      '${item.quantity}個 × ¥${item.price} × ${item.duration}日'),
-                  trailing: Text(
-                    '¥${item.total.toStringAsFixed(0)}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ))
-          .toList(),
-    );
-  }
-
-  Widget _buildTotalSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('小計:'),
-            Text('¥${cart.total.toStringAsFixed(0)}'),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('消費税:'),
-            Text('¥${(cart.total * 0.1).toStringAsFixed(0)}'),
-          ],
-        ),
-        const Divider(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('合計:', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(
-              '¥${(cart.total * 1.1).toStringAsFixed(0)}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   Future<void> _processCheckout() async {
     try {
-      setState(() => _isLoading = true); // Start loading
-
+      setState(() => _isLoading = true);
       await CartService(authService: AuthService())
           .checkout(context, cart.items);
 
       if (mounted) {
         setState(() {
-          _isLoading = false; // Stop loading
+          _isLoading = false;
           cart.clear();
           cart.saveToStorage();
         });
-
-        // Close the dialog
         Navigator.pop(context);
-
-        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('予約が完了しました'),
             backgroundColor: Colors.green,
           ),
         );
-
-        // Optionally refresh the devices list
         _fetchInitialDevices();
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false); // Stop loading
-
-        // Close the dialog if it's still open
+        setState(() => _isLoading = false); 
         if (Navigator.canPop(context)) {
           Navigator.pop(context);
         }
-
-        // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('エラーが発生しました: $e'),
@@ -263,27 +195,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
     }
   }
 
-  Widget _buildDateRangeSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          '予約期間',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Text(DateFormat('yyyy/MM/dd').format(_rentalDate!)),
-            const Text(' 〜 '),
-            Text(DateFormat('yyyy/MM/dd').format(_returnDate!)),
-          ],
-        ),
-      ],
-    );
-  }
-
-  void _proceedToReservationConfirmation() {
+void _proceedToReservationConfirmation() {
     if (cart.itemCount == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('カートにアイテムを追加してください')),
@@ -317,36 +229,12 @@ void _showCheckoutDialog() async {
   }
 }
 
-  int _calculateDaysBetween(DateTime start, DateTime end) {
-    return end.difference(start).inDays + 1;
-  }
-
-  String _formatDateRange(DateTime start, DateTime end) {
-    final formatter = DateFormat('yyyy/MM/dd');
-    return '${formatter.format(start)} - ${formatter.format(end)}';
-  }
-
   void _showErrorSnackbar() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('デバイスの取得中にエラーが発生しました。'),
         backgroundColor: Colors.red,
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      title: const Text('新規予約', style: TextStyle(fontWeight: FontWeight.bold)),
-      centerTitle: true,
-      backgroundColor: Colors.teal,
-      foregroundColor: Colors.white,
-      actions: [
-        GridToggleButton(
-          isGridView: _isGridView,
-          onToggle: (newValue) => setState(() => _isGridView = newValue),
-        ),
-      ],
     );
   }
 

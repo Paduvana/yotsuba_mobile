@@ -175,19 +175,17 @@ class CheckOutDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('キャンセル'),
-                    ),
                     const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(context, true), // Return true to proceed with checkout
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
                       ),
-                      child: const Text('予約を確定する'),
+                      child: const Text('予約を確定する',style: const TextStyle(
+                            color: Colors.white,
+                          ),),
                     ),
                   ],
                 ),
