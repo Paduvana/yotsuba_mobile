@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:yotsuba_mobile/models/CartModels.dart';
 import 'package:yotsuba_mobile/services/AuthService.dart';
+import 'package:yotsuba_mobile/services/CartService.dart';
 import 'package:yotsuba_mobile/services/DeviceService.dart';
 import 'package:yotsuba_mobile/widgets/BottomNavBar.dart';
+import 'package:yotsuba_mobile/widgets/CheckoutDialog.dart';
 import 'package:yotsuba_mobile/widgets/CustomAppBar.dart';
 import 'package:yotsuba_mobile/widgets/DateSelectionRow.dart';
 import 'package:yotsuba_mobile/widgets/ProductGridView.dart';
@@ -122,6 +124,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
   }
 
   void _handleAddToCart(int deviceId, String name, double price, int quantity) {
+    print('Adding to cart - Quantity: $quantity');
     final cartItem = CartItem(
       deviceId: deviceId,
       name: name,
@@ -129,7 +132,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
       quantity: quantity,
       startDate: _rentalDate!,
       endDate: _returnDate!,
-      duration: _returnDate!.difference(_rentalDate!).inDays + 1,
+      duration: _returnDate!.difference(_rentalDate!).inDays,
     );
 
     setState(() {
@@ -146,7 +149,11 @@ class _NewReservationPageState extends State<NewReservationPage> {
           SnackBar(content: Text('$name をカートに追加しました')),
         );
       }
-      print(cart.items);
+      print('Cart items after update:');
+      for (var item in cart.items) {
+        print(
+            '${item.name}: ${item.quantity} * ${item.price} * ${item.duration}');
+      }
       cart.saveToStorage();
     });
   }
@@ -210,28 +217,47 @@ class _NewReservationPageState extends State<NewReservationPage> {
 
   Future<void> _processCheckout() async {
     try {
-      Navigator.pop(context); // Close dialog
-      setState(() => _isLoading = true);
+      setState(() => _isLoading = true); // Start loading
 
-      // Add your checkout API call here
-      await Future.delayed(const Duration(seconds: 1)); // Simulated API call
-
-      setState(() {
-        cart.clear();
-        cart.saveToStorage();
-        _isLoading = false;
-      });
+      await CartService(authService: AuthService())
+          .checkout(context, cart.items);
 
       if (mounted) {
+        setState(() {
+          _isLoading = false; // Stop loading
+          cart.clear();
+          cart.saveToStorage();
+        });
+
+        // Close the dialog
+        Navigator.pop(context);
+
+        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('予約が完了しました')),
+          const SnackBar(
+            content: Text('予約が完了しました'),
+            backgroundColor: Colors.green,
+          ),
         );
+
+        // Optionally refresh the devices list
+        _fetchInitialDevices();
       }
     } catch (e) {
-      setState(() => _isLoading = false);
       if (mounted) {
+        setState(() => _isLoading = false); // Stop loading
+
+        // Close the dialog if it's still open
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
+
+        // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('エラーが発生しました: $e')),
+          SnackBar(
+            content: Text('エラーが発生しました: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -258,13 +284,6 @@ class _NewReservationPageState extends State<NewReservationPage> {
   }
 
   void _proceedToReservationConfirmation() {
-    if (_rentalDate == null || _returnDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('貸出日と返却日を選択してください')),
-      );
-      return;
-    }
-
     if (cart.itemCount == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('カートにアイテムを追加してください')),
@@ -275,42 +294,28 @@ class _NewReservationPageState extends State<NewReservationPage> {
     _showCheckoutDialog();
   }
 
-  void _showCheckoutDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('予約内容確認'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Rental period
-              _buildDateRangeSection(),
-              const Divider(),
-              // Cart items
-              _buildCartItemsList(),
-              const Divider(),
-              // Totals
-              _buildTotalSection(),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('キャンセル'),
-          ),
-          ElevatedButton(
-            onPressed: _processCheckout,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal,
-            ),
-            child: const Text('予約を確定する'),
-          ),
-        ],
-      ),
+void _showCheckoutDialog() async {
+  if (cart.items.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('カートにアイテムを追加してください')),
     );
+    return;
   }
+
+  final shouldProceed = await showDialog<bool>(
+    context: context,
+    barrierDismissible: !_isLoading,
+    builder: (context) => CheckOutDialog(
+      items: cart.items,
+      startDate: _rentalDate!,
+      endDate: _returnDate!,
+    ),
+  );
+
+  if (shouldProceed == true && mounted) {
+    await _processCheckout();
+  }
+}
 
   int _calculateDaysBetween(DateTime start, DateTime end) {
     return end.difference(start).inDays + 1;
@@ -392,11 +397,10 @@ class _NewReservationPageState extends State<NewReservationPage> {
     );
   }
 
- 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:const CustomAppBar(title: '新規予約',hideBackButton: true),
+      appBar: const CustomAppBar(title: '新規予約', hideBackButton: true),
       body: _buildBody(),
       bottomNavigationBar: ListenableBuilder(
         listenable: cart,

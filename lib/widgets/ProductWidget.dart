@@ -31,7 +31,7 @@ class ProductWidget extends StatefulWidget {
 }
 
 class _ProductWidgetState extends State<ProductWidget> {
-  int _quantity = 1;
+  late int _quantity;
   late double _totalPrice;
   bool _isAddedToCart = false;
   int _currentImageIndex = 0;
@@ -57,7 +57,13 @@ class _ProductWidgetState extends State<ProductWidget> {
       _totalPrice = widget.basePrice * quantity;
     });
   }
-
+  void _updateQuantity(int? newValue) {
+    if (newValue != null && newValue > 0 && newValue <= widget.availableCount) {
+      setState(() {
+        _quantity = newValue;
+      });
+    }
+  }
 void _showImageGallery(BuildContext context) {
     if (widget.imageGallery.isEmpty) return;
     
@@ -267,14 +273,7 @@ void _showImageGallery(BuildContext context) {
           child: DropdownButtonHideUnderline(
             child: DropdownButton<int>(
               value: _quantity,
-              onChanged: isAvailable ? (int? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    _quantity = newValue;
-                    _updatePrice(_quantity);
-                  });
-                }
-              } : null,
+              onChanged: isAvailable ? _updateQuantity : null,
               dropdownColor: Colors.white,
               style: const TextStyle(color: Colors.black),
               isExpanded: true,

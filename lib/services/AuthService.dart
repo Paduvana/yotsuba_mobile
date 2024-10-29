@@ -67,7 +67,7 @@ class AuthService {
     Uri url,
     BuildContext context, {
     String method = 'GET',
-    Map<String, dynamic>? body,
+    dynamic body,
     Map<String, File>? files,
   }) async {
     String? accessToken = await getAccessToken();
@@ -101,7 +101,7 @@ class AuthService {
     Uri url,
     String method,
     String? accessToken,
-    Map<String, dynamic>? body,
+    dynamic body,
     Map<String, File>? files,
   ) async {
     // If there are files, use multipart request
