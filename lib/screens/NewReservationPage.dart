@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:yotsuba_mobile/models/CartModels.dart';
@@ -12,7 +13,6 @@ import 'package:yotsuba_mobile/widgets/ProductGridView.dart';
 import 'package:yotsuba_mobile/widgets/ProductList.dart';
 import 'package:yotsuba_mobile/widgets/SearchFilters.dart';
 import 'package:yotsuba_mobile/widgets/ReservationBottomBar.dart';
-import 'package:yotsuba_mobile/widgets/GridToggleButton.dart';
 
 class NewReservationPage extends StatefulWidget {
   const NewReservationPage({Key? key}) : super(key: key);
@@ -31,6 +31,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
   List<dynamic> _devices = [];
   bool _isLoading = true;
   bool _isFetching = false;
+  Timer? _debounceTimer;
 
   final DeviceService deviceService = DeviceService(authService: AuthService());
 
@@ -41,18 +42,23 @@ class _NewReservationPageState extends State<NewReservationPage> {
     _rentalDate = DateTime.now();
     _returnDate = DateTime.now().add(const Duration(days: 1));
     _loadInitialData();
-  }
 
-  Future<void> _loadInitialData() async {
-    await cart.loadFromStorage(); // Load saved cart items
-    await _fetchInitialDevices();
+    // Add listener for the keyword search controller with debounce
+    _keywordController.addListener(_onSearchKeywordChanged);
   }
 
   @override
   void dispose() {
     cart.dispose();
+    _keywordController.removeListener(_onSearchKeywordChanged);
     _keywordController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
+  }
+
+  Future<void> _loadInitialData() async {
+    await cart.loadFromStorage(); // Load saved cart items
+    await _fetchInitialDevices();
   }
 
   Future<void> _fetchInitialDevices() async {
@@ -69,42 +75,51 @@ class _NewReservationPageState extends State<NewReservationPage> {
     }
   }
 
-  Future<void> _fetchDevices({String? startDate, String? endDate}) async {
+  Future<void> _fetchDevices({String? startDate, String? endDate, String keyword = ''}) async {
     if (!mounted || _isFetching) return;
 
     try {
       _isFetching = true;
-
-      if (mounted) {
-        setState(() {
-          _isLoading = true;
-          _devices = [];
-        });
-      }
+      setState(() {
+        _isLoading = true;
+        _devices = [];
+      });
 
       final response = await deviceService.fetchDeviceData(
         context,
         startDate: startDate!,
         endDate: endDate!,
         category: '',
-        search: _keywordController.text,
+        search: keyword,
       );
 
-      if (mounted) {
-        setState(() {
-          _devices = response['devices'];
-          _isLoading = false;
-        });
-      }
+      setState(() {
+        _devices = response['devices'];
+        _isLoading = false;
+      });
     } catch (e) {
       print("Error fetching devices: $e");
-      if (mounted) {
-        setState(() => _isLoading = false);
-        _showErrorSnackbar();
-      }
+      setState(() => _isLoading = false);
+      _showErrorSnackbar();
     } finally {
       _isFetching = false;
     }
+  }
+
+  void _onSearchKeywordChanged() {
+    // Cancel any existing timer to debounce
+    if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+
+    // Start a new timer
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        _fetchDevices(
+          startDate: DateFormat('yyyy-MM-dd').format(_rentalDate!),
+          endDate: DateFormat('yyyy-MM-dd').format(_returnDate!),
+          keyword: _keywordController.text,
+        );
+      }
+    });
   }
 
   void _handleDateChange(DateTime? rental, DateTime? return_) {
@@ -120,12 +135,14 @@ class _NewReservationPageState extends State<NewReservationPage> {
       _fetchDevices(
         startDate: DateFormat('yyyy-MM-dd').format(rental),
         endDate: DateFormat('yyyy-MM-dd').format(return_),
+        keyword: _keywordController.text,
       );
     }
   }
 
   void _handleAddToCart(CartItem item) {
-    final CartItem cartItem = item.startDate == DateTime.now() ? CartItem(
+    final CartItem cartItem = item.startDate == DateTime.now()
+        ? CartItem(
       deviceId: item.deviceId,
       name: item.name,
       price: item.price,
@@ -133,11 +150,13 @@ class _NewReservationPageState extends State<NewReservationPage> {
       startDate: _rentalDate!,
       endDate: _returnDate!,
       duration: _returnDate!.difference(_rentalDate!).inDays + 1,
-    ) : item;
+    )
+        : item;
 
-     setState(() {
-      final existingIndex = cart.items.indexWhere((i) => i.deviceId == cartItem.deviceId);
-      
+    setState(() {
+      final existingIndex =
+      cart.items.indexWhere((i) => i.deviceId == cartItem.deviceId);
+
       if (existingIndex >= 0) {
         cart.removeItem(cart.items[existingIndex]);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -157,8 +176,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
     if (!mounted) return;
     try {
       setState(() => _isLoading = true);
-      await CartService(authService: AuthService())
-          .checkout(context, cart.items);
+      await CartService(authService: AuthService()).checkout(context, cart.items);
 
       if (mounted) {
         setState(() {
@@ -177,7 +195,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false); 
+        setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('エラーが発生しました: $e'),
@@ -188,7 +206,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
     }
   }
 
-void _proceedToReservationConfirmation() {
+  void _proceedToReservationConfirmation() {
     if (cart.itemCount == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('カートにアイテムを追加してください')),
@@ -199,28 +217,28 @@ void _proceedToReservationConfirmation() {
     _showCheckoutDialog();
   }
 
-void _showCheckoutDialog() async {
-  if (cart.items.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('カートにアイテムを追加してください')),
+  void _showCheckoutDialog() async {
+    if (cart.items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('カートにアイテムを追加してください')),
+      );
+      return;
+    }
+
+    final shouldProceed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: !_isLoading,
+      builder: (context) => CheckOutDialog(
+        items: cart.items,
+        startDate: _rentalDate!,
+        endDate: _returnDate!,
+      ),
     );
-    return;
-  }
 
-  final shouldProceed = await showDialog<bool>(
-    context: context,
-    barrierDismissible: !_isLoading,
-    builder: (context) => CheckOutDialog(
-      items: cart.items,
-      startDate: _rentalDate!,
-      endDate: _returnDate!,
-    ),
-  );
-
-  if (shouldProceed == true && mounted) {
-    await _processCheckout();
+    if (shouldProceed == true && mounted) {
+      await _processCheckout();
+    }
   }
-}
 
   void _showErrorSnackbar() {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -252,13 +270,13 @@ void _showCheckoutDialog() async {
           Expanded(
             child: _isGridView
                 ? ProductsGridView(
-                    devices: _devices,
-                    onAddToCart: _handleAddToCart,
-                  )
+              devices: _devices,
+              onAddToCart: _handleAddToCart,
+            )
                 : ProductsListView(
-                    devices: _devices,
-                    onAddToCart: _handleAddToCart,
-                  ),
+              devices: _devices,
+              onAddToCart: _handleAddToCart,
+            ),
           ),
         ],
       ),
@@ -283,9 +301,9 @@ void _showCheckoutDialog() async {
     return Scaffold(
       appBar: const CustomAppBar(title: '新規予約', hideBackButton: true),
       body: _buildBody(),
-      bottomNavigationBar: ListenableBuilder(
-        listenable: cart,
-        builder: (context, child) => _buildBottomNavigation(),
+      bottomNavigationBar: ListView(
+        shrinkWrap: true,
+        children: [_buildBottomNavigation()],
       ),
     );
   }
