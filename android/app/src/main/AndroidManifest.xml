@@ -9,7 +9,10 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <application
         android:label="yotsuba_mobile"
-        android:icon="@mipmap/ic_launcher">
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true"
+        android:enableOnBackInvokedCallback="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
