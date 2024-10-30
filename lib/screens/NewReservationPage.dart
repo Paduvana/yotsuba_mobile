@@ -159,6 +159,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
   }
 
   Future<void> _processCheckout() async {
+    if (!mounted) return;
     try {
       setState(() => _isLoading = true);
       await CartService(authService: AuthService())
@@ -170,11 +171,11 @@ class _NewReservationPageState extends State<NewReservationPage> {
           cart.clear();
           cart.saveToStorage();
         });
-        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('予約が完了しました'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
           ),
         );
         _fetchInitialDevices();
@@ -182,9 +183,6 @@ class _NewReservationPageState extends State<NewReservationPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false); 
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context);
-        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('エラーが発生しました: $e'),

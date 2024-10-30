@@ -40,30 +40,33 @@ class AuthService {
     await _storage.delete(key: 'refresh_token');
   }
 
-  Future<void> refreshAccessToken() async {
-    String? refreshToken = await getRefreshToken();
-    if (refreshToken == null) {
-      throw Exception('No refresh token available.');
-    }
+  Future<void> refreshToken(BuildContext context) async {
+    try {
+      String? refreshToken = await getRefreshToken();
+      print(refreshToken);
+      if (refreshToken == null) {
+        throw Exception('No refresh token available');
+      }
 
-    final response = await http.post(
-      Uri.parse(refreshTokenUrl),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({'refresh': refreshToken}),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      String newAccessToken = data['access'];
-      await storeToken(newAccessToken, refreshToken);
-    } else {
-      throw Exception('Failed to refresh access token.');
+      final response = await http.post(
+        Uri.parse(ApiConstants.refreshTokenEndpoint),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'refresh': refreshToken}),
+      );
+      print(response.body);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        await storeToken(data['access'], refreshToken);
+      } else {
+        throw Exception('Failed to refresh token');
+      }
+    } catch (e) {
+      print('Token refresh error: $e');
+      rethrow;
     }
   }
 
-  Future<dynamic> makeAuthenticatedRequest(
+  Future<http.Response> makeAuthenticatedRequest(
     Uri url,
     BuildContext context, {
     String method = 'GET',
@@ -72,32 +75,41 @@ class AuthService {
   }) async {
     String? accessToken = await getAccessToken();
 
-    final response = await _makeHttpRequest(
-      url,
-      method,
-      accessToken,
-      body,
-      files,
-    );
+    try {
+      final response = await _makeHttpRequest(
+        url,
+        method,
+        accessToken,
+        body,
+        files,
+      );
 
-    if ((response.statusCode == 401 || response.statusCode == 403) &&
-        response.body.contains('"token_not_valid"') &&
-        response.body.contains('"token_type":"access"')) {
-      try {
-        await refreshAccessToken();
-        accessToken = await getAccessToken();
-        return await _makeHttpRequest(url, method, accessToken, body, files);
-      } catch (e) {
-        await deleteTokens();
-        _redirectToLoginPage(context);
-        throw Exception('Session expired. Please login again.');
+      // Only handle token refresh for actual token errors
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        final responseBody = jsonDecode(response.body);
+        print(responseBody['code']);
+        if (responseBody['code'] == 'token_not_valid') {
+          try {
+            await refreshToken(context);
+            accessToken = await getAccessToken();
+            return await _makeHttpRequest(
+                url, method, accessToken, body, files);
+          } catch (e) {
+            await deleteTokens();
+            _redirectToLoginPage(context);
+            throw Exception('Session expired. Please login again.');
+          }
+        }
       }
-    }
 
-    return response;
+      return response;
+    } catch (e) {
+      print('Request error: $e');
+      rethrow;
+    }
   }
 
-    Future<dynamic> _makeHttpRequest(
+  Future<dynamic> _makeHttpRequest(
     Uri url,
     String method,
     String? accessToken,
@@ -107,7 +119,7 @@ class AuthService {
     // If there are files, use multipart request
     if (files != null && files.isNotEmpty) {
       var request = http.MultipartRequest(method, url);
-      
+
       // Add headers
       request.headers.addAll({
         'Accept': 'application/json',
@@ -135,7 +147,7 @@ class AuthService {
       // Send request and convert to Response
       final streamedResponse = await request.send();
       return await http.Response.fromStream(streamedResponse);
-    } 
+    }
     // Regular JSON request
     else {
       final headers = {
@@ -164,6 +176,7 @@ class AuthService {
       }
     }
   }
+
   void _redirectToLoginPage(BuildContext context) {
     Navigator.pushReplacement(
       context,
