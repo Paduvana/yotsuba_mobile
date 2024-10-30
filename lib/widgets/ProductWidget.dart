@@ -332,14 +332,15 @@ void _showImageGallery(BuildContext context) {
           endDate: DateTime.now().add(const Duration(days: 1)),
           duration: 1,
         );
+        setState(() {_isAddedToCart = !_isAddedToCart;});
         widget.onAddToCart(cartItem);
       } : null,
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
-        backgroundColor: Colors.teal,
+        backgroundColor:  _isAddedToCart ? Colors.blue : Colors.teal,
         disabledBackgroundColor: const Color.fromARGB(255, 71, 94, 92),
       ),
-      child: const Text('カートに入れる'),
+      child: Text(_isAddedToCart ? 'カートから外す' : 'カートに入れる'),
     );
   }
 
