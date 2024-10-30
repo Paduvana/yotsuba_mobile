@@ -43,7 +43,6 @@ class AuthService {
   Future<void> refreshToken(BuildContext context) async {
     try {
       String? refreshToken = await getRefreshToken();
-      print(refreshToken);
       if (refreshToken == null) {
         throw Exception('No refresh token available');
       }
@@ -53,7 +52,6 @@ class AuthService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'refresh': refreshToken}),
       );
-      print(response.body);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         await storeToken(data['access'], refreshToken);
@@ -87,7 +85,6 @@ class AuthService {
       // Only handle token refresh for actual token errors
       if (response.statusCode == 401 || response.statusCode == 403) {
         final responseBody = jsonDecode(response.body);
-        print(responseBody['code']);
         if (responseBody['code'] == 'token_not_valid') {
           try {
             await refreshToken(context);

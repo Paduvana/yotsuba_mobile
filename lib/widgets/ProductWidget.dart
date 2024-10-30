@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yotsuba_mobile/models/CartModels.dart';
 import 'package:yotsuba_mobile/services/APIConstants.dart';
 import 'package:yotsuba_mobile/widgets/SetPeriodDialog.dart';
 
@@ -10,7 +11,7 @@ class ProductWidget extends StatefulWidget {
   final List<String> imageGallery;
   final int availableCount;
   final List<dynamic> reservedDates;
-  final Function(int quantity) onAddToCart;
+  final Function(CartItem) onAddToCart; 
   final bool isInCart;
 
   const ProductWidget({
@@ -162,7 +163,7 @@ void _showImageGallery(BuildContext context) {
     final bool isAvailable = widget.availableCount > 0;
 
     return Padding(
-      padding: const EdgeInsets.all(8.0), // Padding between widgets
+      padding: const EdgeInsets.all(8.0),
       child: Stack(
         children: [
           Container(
@@ -178,7 +179,6 @@ void _showImageGallery(BuildContext context) {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Left Column for Image and Reservation Indicator
                 Expanded(
                   flex: 3,
                   child: Column(
@@ -205,10 +205,7 @@ void _showImageGallery(BuildContext context) {
                     ],
                   ),
                 ),
-                
-                const SizedBox(width: 16), // Spacing between columns
-
-                // Right Column for Title, Quantity, Price, and Buttons
+                const SizedBox(width: 16),
                 Expanded(
                   flex: 2,
                   child: Column(
@@ -325,35 +322,56 @@ void _showImageGallery(BuildContext context) {
 
   Widget _buildAddToCartButton(bool isAvailable) {
     return ElevatedButton(
-      onPressed: isAvailable
-          ? () {
-              setState(() {
-                _isAddedToCart = !_isAddedToCart;
-              });
-              widget.onAddToCart(_quantity);
-            }
-          : null,
+      onPressed: isAvailable ? () {
+        final cartItem = CartItem(
+          deviceId: widget.deviceId,
+          name: widget.title,
+          price: widget.basePrice,
+          quantity: _quantity,
+          startDate: DateTime.now(), 
+          endDate: DateTime.now().add(const Duration(days: 1)),
+          duration: 1,
+        );
+        widget.onAddToCart(cartItem);
+      } : null,
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
-        backgroundColor: _isAddedToCart ? Colors.blue : Colors.teal,
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        textStyle: const TextStyle(fontSize: 16),
+        backgroundColor: Colors.teal,
         disabledBackgroundColor: const Color.fromARGB(255, 71, 94, 92),
       ),
-      child: Text(_isAddedToCart ? 'カートから外す' : 'カートに入れる'),
+      child: const Text('カートに入れる'),
     );
   }
 
-  Widget _buildSetPeriodButton() {
+ Widget _buildSetPeriodButton() {
     return OutlinedButton(
-      onPressed: () {
-        showDialog(
+      onPressed: () async {
+        final result = await showDialog<Map<String, dynamic>>(
           context: context,
-          builder: (BuildContext context) => SetPeriodDialog(machineName: widget.title),
+          builder: (BuildContext context) => SetPeriodDialog(
+            machineName: widget.title,
+            deviceId: widget.deviceId,
+            price: widget.basePrice,
+            quantity: 1,
+          ),
         );
-        },
+        
+        if (result != null) {
+          final cartItem = CartItem(
+            deviceId: widget.deviceId,
+            name: widget.title,
+            price: widget.basePrice,
+            quantity: 1,
+            startDate: result['startDate'],
+            endDate: result['endDate'],
+            duration: result['endDate'].difference(result['startDate']).inDays,
+          );
+          widget.onAddToCart(cartItem);
+        }
+      },
       style: OutlinedButton.styleFrom(
-        foregroundColor: Colors.white, backgroundColor: Colors.grey.shade500,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.grey.shade500,
         side: const BorderSide(color: Colors.grey),
       ),
       child: const Text('個別に期間を設定する'),
@@ -369,7 +387,7 @@ List<DateTime> _parseReservedDates(List<dynamic> reservedDates) {
         DateTime startDate = DateTime.parse(dateRange[0]);
         DateTime endDate = DateTime.parse(dateRange[1]);
 
-        for (DateTime date = startDate; date.isBefore(endDate.add(Duration(days: 1))); date = date.add(Duration(days: 1))) {
+        for (DateTime date = startDate; date.isBefore(endDate.add(const Duration(days: 1))); date = date.add(const Duration(days: 1))) {
           allReservedDates.add(date);
         }
       } else {

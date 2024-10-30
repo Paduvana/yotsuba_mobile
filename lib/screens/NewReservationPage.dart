@@ -9,6 +9,7 @@ import 'package:yotsuba_mobile/widgets/CheckoutDialog.dart';
 import 'package:yotsuba_mobile/widgets/CustomAppBar.dart';
 import 'package:yotsuba_mobile/widgets/DateSelectionRow.dart';
 import 'package:yotsuba_mobile/widgets/ProductGridView.dart';
+import 'package:yotsuba_mobile/widgets/ProductList.dart';
 import 'package:yotsuba_mobile/widgets/SearchFilters.dart';
 import 'package:yotsuba_mobile/widgets/ReservationBottomBar.dart';
 import 'package:yotsuba_mobile/widgets/GridToggleButton.dart';
@@ -123,36 +124,30 @@ class _NewReservationPageState extends State<NewReservationPage> {
     }
   }
 
-  void _handleAddToCart(int deviceId, String name, double price, int quantity) {
-    print('Adding to cart - Quantity: $quantity');
-    final cartItem = CartItem(
-      deviceId: deviceId,
-      name: name,
-      price: price,
-      quantity: quantity,
+  void _handleAddToCart(CartItem item) {
+    final CartItem cartItem = item.startDate == DateTime.now() ? CartItem(
+      deviceId: item.deviceId,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
       startDate: _rentalDate!,
       endDate: _returnDate!,
-      duration: _returnDate!.difference(_rentalDate!).inDays,
-    );
+      duration: _returnDate!.difference(_rentalDate!).inDays + 1,
+    ) : item;
 
-    setState(() {
-      final existingIndex =
-          cart.items.indexWhere((item) => item.deviceId == deviceId);
+     setState(() {
+      final existingIndex = cart.items.indexWhere((i) => i.deviceId == cartItem.deviceId);
+      
       if (existingIndex >= 0) {
         cart.removeItem(cart.items[existingIndex]);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$name をカートから削除しました')),
+          SnackBar(content: Text('${cartItem.name} をカートから削除しました')),
         );
       } else {
         cart.addItem(cartItem);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$name をカートに追加しました')),
+          SnackBar(content: Text('${cartItem.name} をカートに追加しました')),
         );
-      }
-      print('Cart items after update:');
-      for (var item in cart.items) {
-        print(
-            '${item.name}: ${item.quantity} * ${item.price} * ${item.duration}');
       }
       cart.saveToStorage();
     });
