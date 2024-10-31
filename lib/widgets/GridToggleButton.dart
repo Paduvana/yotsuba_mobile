@@ -5,10 +5,10 @@ class GridToggleButton extends StatefulWidget {
   final ValueChanged<bool> onToggle;
 
   const GridToggleButton({
-    Key? key,
+    super.key,
     required this.isGridView,
     required this.onToggle,
-  }) : super(key: key);
+  });
 
   @override
   _GridToggleButtonState createState() => _GridToggleButtonState();
@@ -18,11 +18,11 @@ class _GridToggleButtonState extends State<GridToggleButton> {
   @override
   Widget build(BuildContext context) {
     // Return an empty widget for now to hide the button
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
-  }
+}
 
-    /*return Container(
+/*return Container(
       decoration: BoxDecoration(
         color: Color(0xFFECE8E8),
         borderRadius: BorderRadius.circular(18.0),

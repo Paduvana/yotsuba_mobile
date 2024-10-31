@@ -7,14 +7,12 @@ class Dashboardwidget extends StatelessWidget {
   final Color titleColor;
   final Color backgroundColor;
 
-
   const Dashboardwidget({
     super.key,
     required this.title,
     required this.reservation,
     required this.titleColor,
     required this.backgroundColor,
-
   });
 
   @override

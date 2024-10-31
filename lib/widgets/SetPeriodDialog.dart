@@ -9,12 +9,12 @@ class SetPeriodDialog extends StatefulWidget {
   final int quantity;
 
   const SetPeriodDialog({
-    Key? key,
+    super.key,
     required this.machineName,
     required this.deviceId,
     required this.price,
     required this.quantity,
-  }) : super(key: key);
+  });
 
   @override
   _SetPeriodDialogState createState() => _SetPeriodDialogState();
@@ -71,12 +71,14 @@ class _SetPeriodDialogState extends State<SetPeriodDialog> {
       lastDay: DateTime.utc(2025, 12, 31),
       focusedDay: DateTime.now(),
       selectedDayPredicate: (day) {
-        return day == _fromDate || day == _toDate ||
+        return day == _fromDate ||
+            day == _toDate ||
             (day.isAfter(_fromDate ?? day) && day.isBefore(_toDate ?? day));
       },
       onDaySelected: (selectedDay, focusedDay) {
         setState(() {
-          if (_fromDate == null || (_toDate != null && selectedDay.isBefore(_fromDate!))) {
+          if (_fromDate == null ||
+              (_toDate != null && selectedDay.isBefore(_fromDate!))) {
             _fromDate = selectedDay;
             _toDate = null;
           } else if (_toDate == null || selectedDay.isAfter(_fromDate!)) {
@@ -137,7 +139,7 @@ class _SetPeriodDialogState extends State<SetPeriodDialog> {
           height: 14,
           color: color,
         ),
-        const SizedBox(width: 4), 
+        const SizedBox(width: 4),
         Text(
           text,
           style: const TextStyle(color: Colors.white),
@@ -174,11 +176,11 @@ class _SetPeriodDialogState extends State<SetPeriodDialog> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-               const Text(
+              const Text(
                 '数量',
                 style: TextStyle(fontSize: 16),
               ),
-              const SizedBox(height: 4), 
+              const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -204,18 +206,21 @@ class _SetPeriodDialogState extends State<SetPeriodDialog> {
                     foregroundColor: Colors.white,
                     disabledBackgroundColor: Colors.grey,
                   ),
-                  onPressed: _canAddToCart ? () {
-                    // Return the selected dates and cart item details
-                    Navigator.of(context).pop({
-                      'deviceId': widget.deviceId,
-                      'name': widget.machineName,
-                      'price': widget.price,
-                      'quantity': widget.quantity,
-                      'startDate': _fromDate,
-                      'endDate': _toDate,
-                      'duration': _toDate!.difference(_fromDate!).inDays + 1,
-                    });
-                  } : null,
+                  onPressed: _canAddToCart
+                      ? () {
+                          // Return the selected dates and cart item details
+                          Navigator.of(context).pop({
+                            'deviceId': widget.deviceId,
+                            'name': widget.machineName,
+                            'price': widget.price,
+                            'quantity': widget.quantity,
+                            'startDate': _fromDate,
+                            'endDate': _toDate,
+                            'duration':
+                                _toDate!.difference(_fromDate!).inDays + 1,
+                          });
+                        }
+                      : null,
                   child: const Text('カートに入れる'),
                 ),
               ),

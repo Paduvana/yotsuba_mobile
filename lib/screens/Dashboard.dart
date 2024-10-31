@@ -6,14 +6,14 @@ import 'package:yotsuba_mobile/widgets/DashboardWidget.dart';
 import 'package:yotsuba_mobile/services/DashboardService.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  const Dashboard({super.key});
 
   @override
   _DashboardState createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
-  int _selectedIndex = 0;
+  final int _selectedIndex = 0;
   Map<String, dynamic> _dashboardData = {};
   bool _isDashboardLoading = true;
   String? _errorMessage;
@@ -89,7 +89,9 @@ class _DashboardState extends State<Dashboard> {
 
     // Iterate through the dashboard data keys and use reservationMapping to get title, color, and border
     _dashboardData.forEach((key, reservations) {
-      if (reservations != null && reservations is List && reservations.isNotEmpty) {
+      if (reservations != null &&
+          reservations is List &&
+          reservations.isNotEmpty) {
         reservationWidgets.addAll(_buildReservationWidgets(reservations, key));
       }
     });
@@ -97,7 +99,8 @@ class _DashboardState extends State<Dashboard> {
     return ListView(children: reservationWidgets);
   }
 
-  List<Widget> _buildReservationWidgets(List<dynamic> reservations, String key) {
+  List<Widget> _buildReservationWidgets(
+      List<dynamic> reservations, String key) {
     final mapping = ReservationModel.reservationMapping[key];
 
     if (mapping == null) {
@@ -105,7 +108,8 @@ class _DashboardState extends State<Dashboard> {
     }
 
     // Define the background color based on the reservation type
-    Color backgroundColor = key == 'overdue_reservation' ? Colors.red[100]! : Colors.white;
+    Color backgroundColor =
+        key == 'overdue_reservation' ? Colors.red[100]! : Colors.white;
 
     return reservations.map<Widget>((reservation) {
       return Dashboardwidget(

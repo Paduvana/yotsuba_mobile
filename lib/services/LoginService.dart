@@ -40,7 +40,7 @@ Future<LoginResult> loginService(
 
     if (response.statusCode == 200) {
       final data = jsonDecode(utf8.decode(response.bodyBytes));
-      
+
       // Debug prints
       print('Decoded data: $data');
       print('Access token: ${data['access_token']}');
@@ -96,7 +96,7 @@ Future<LoginResult> loginService(
 
 void _showErrorDialog(BuildContext context, String message) {
   if (!context.mounted) return;
-  
+
   showDialog(
     context: context,
     barrierDismissible: false,

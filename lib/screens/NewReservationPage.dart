@@ -12,10 +12,9 @@ import 'package:yotsuba_mobile/widgets/ProductGridView.dart';
 import 'package:yotsuba_mobile/widgets/ProductList.dart';
 import 'package:yotsuba_mobile/widgets/SearchFilters.dart';
 import 'package:yotsuba_mobile/widgets/ReservationBottomBar.dart';
-import 'package:yotsuba_mobile/widgets/GridToggleButton.dart';
 
 class NewReservationPage extends StatefulWidget {
-  const NewReservationPage({Key? key}) : super(key: key);
+  const NewReservationPage({super.key});
 
   @override
   _NewReservationPageState createState() => _NewReservationPageState();
@@ -24,9 +23,8 @@ class NewReservationPage extends StatefulWidget {
 class _NewReservationPageState extends State<NewReservationPage> {
   DateTime? _rentalDate;
   DateTime? _returnDate;
-  bool _isGridView = false;
+  final bool _isGridView = false;
   final TextEditingController _keywordController = TextEditingController();
-  double _totalPrice = 0;
   late final Cart cart;
   List<dynamic> _devices = [];
   bool _isLoading = true;
@@ -64,12 +62,11 @@ class _NewReservationPageState extends State<NewReservationPage> {
 
       await _fetchDevices(startDate: startDate, endDate: endDate);
     } catch (e) {
-      print("Error in initial fetch: $e");
       _showErrorSnackbar();
     }
   }
 
-  Future<void> _fetchDevices({String? startDate, String? endDate}) async {
+  Future<void> _fetchDevices({String? startDate, String? endDate, String? search, String? category}) async {
     if (!mounted || _isFetching) return;
 
     try {
@@ -86,8 +83,8 @@ class _NewReservationPageState extends State<NewReservationPage> {
         context,
         startDate: startDate!,
         endDate: endDate!,
-        category: '',
-        search: _keywordController.text,
+        category: category ?? '',
+        search: search ?? '',
       );
 
       if (mounted) {
@@ -97,7 +94,6 @@ class _NewReservationPageState extends State<NewReservationPage> {
         });
       }
     } catch (e) {
-      print("Error fetching devices: $e");
       if (mounted) {
         setState(() => _isLoading = false);
         _showErrorSnackbar();
@@ -115,7 +111,6 @@ class _NewReservationPageState extends State<NewReservationPage> {
 
     if (rental != null && return_ != null) {
       cart.clear();
-      setState(() => _totalPrice = 0);
 
       _fetchDevices(
         startDate: DateFormat('yyyy-MM-dd').format(rental),
@@ -124,20 +119,43 @@ class _NewReservationPageState extends State<NewReservationPage> {
     }
   }
 
-  void _handleAddToCart(CartItem item) {
-    final CartItem cartItem = item.startDate == DateTime.now() ? CartItem(
-      deviceId: item.deviceId,
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-      startDate: _rentalDate!,
-      endDate: _returnDate!,
-      duration: _returnDate!.difference(_rentalDate!).inDays + 1,
-    ) : item;
+void _handleSearch(String keyword, String category) {
+    if (!mounted) return;
+    
+    setState(() => _isLoading = true);
 
-     setState(() {
-      final existingIndex = cart.items.indexWhere((i) => i.deviceId == cartItem.deviceId);
-      
+    final String startDate = _rentalDate != null 
+        ? DateFormat('yyyy-MM-dd').format(_rentalDate!)
+        : DateFormat('yyyy-MM-dd').format(DateTime.now());
+        
+    final String endDate = _returnDate != null
+        ? DateFormat('yyyy-MM-dd').format(_returnDate!)
+        : DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 1)));
+
+    _fetchDevices(
+      startDate: startDate,
+      endDate: endDate,
+      search: keyword,
+      category: category,
+    );
+  }
+  void _handleAddToCart(CartItem item) {
+    final CartItem cartItem = item.startDate == DateTime.now()
+        ? CartItem(
+            deviceId: item.deviceId,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            startDate: _rentalDate!,
+            endDate: _returnDate!,
+            duration: _returnDate!.difference(_rentalDate!).inDays + 1,
+          )
+        : item;
+
+    setState(() {
+      final existingIndex =
+          cart.items.indexWhere((i) => i.deviceId == cartItem.deviceId);
+
       if (existingIndex >= 0) {
         cart.removeItem(cart.items[existingIndex]);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -177,7 +195,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isLoading = false); 
+        setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('エラーが発生しました: $e'),
@@ -188,7 +206,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
     }
   }
 
-void _proceedToReservationConfirmation() {
+  void _proceedToReservationConfirmation() {
     if (cart.itemCount == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('カートにアイテムを追加してください')),
@@ -199,28 +217,28 @@ void _proceedToReservationConfirmation() {
     _showCheckoutDialog();
   }
 
-void _showCheckoutDialog() async {
-  if (cart.items.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('カートにアイテムを追加してください')),
+  void _showCheckoutDialog() async {
+    if (cart.items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('カートにアイテムを追加してください')),
+      );
+      return;
+    }
+
+    final shouldProceed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: !_isLoading,
+      builder: (context) => CheckOutDialog(
+        items: cart.items,
+        startDate: _rentalDate!,
+        endDate: _returnDate!,
+      ),
     );
-    return;
-  }
 
-  final shouldProceed = await showDialog<bool>(
-    context: context,
-    barrierDismissible: !_isLoading,
-    builder: (context) => CheckOutDialog(
-      items: cart.items,
-      startDate: _rentalDate!,
-      endDate: _returnDate!,
-    ),
-  );
-
-  if (shouldProceed == true && mounted) {
-    await _processCheckout();
+    if (shouldProceed == true && mounted) {
+      await _processCheckout();
+    }
   }
-}
 
   void _showErrorSnackbar() {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -247,7 +265,7 @@ void _showCheckoutDialog() async {
             onDateChange: _handleDateChange,
           ),
           const SizedBox(height: 16),
-          SearchFilters(keywordController: _keywordController),
+          SearchFilters(keywordController: _keywordController,onSearch: _handleSearch,),
           const SizedBox(height: 16),
           Expanded(
             child: _isGridView
@@ -273,7 +291,7 @@ void _showCheckoutDialog() async {
           onProceed: _proceedToReservationConfirmation,
           cart: cart,
         ),
-        BottomNavBar(selectedIndex: 1),
+        const BottomNavBar(selectedIndex: 1),
       ],
     );
   }

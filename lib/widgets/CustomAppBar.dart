@@ -5,15 +5,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool hideBackButton;
 
   const CustomAppBar({
-    Key? key,
+    super.key,
     required this.title,
-    this.hideBackButton = false, // Optional parameter to control back button visibility
-  }) : super(key: key);
+    this.hideBackButton =
+        false, // Optional parameter to control back button visibility
+  });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: !hideBackButton, // Set to false to remove back button
+      automaticallyImplyLeading:
+          !hideBackButton, // Set to false to remove back button
       centerTitle: true,
       backgroundColor: Colors.teal,
       title: Text(

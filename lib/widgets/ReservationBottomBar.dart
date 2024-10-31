@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:yotsuba_mobile/models/CartModels.dart';
 import 'package:yotsuba_mobile/widgets/CartDetailsDialog.dart';
 
@@ -8,10 +7,10 @@ class ReservationBottomBar extends StatefulWidget {
   final VoidCallback onProceed;
 
   const ReservationBottomBar({
-    Key? key,
+    super.key,
     required this.cart,
     required this.onProceed,
-  }) : super(key: key);
+  });
 
   @override
   State<ReservationBottomBar> createState() => _ReservationBottomBarState();
@@ -32,8 +31,12 @@ class _ReservationBottomBarState extends State<ReservationBottomBar> {
       context: context,
       builder: (BuildContext context) => CartDetailsDialog(
         cart: widget.cart, // Use widget.cart here
-        startDate: widget.cart.items.isNotEmpty ? widget.cart.items.first.startDate : null,
-        endDate: widget.cart.items.isNotEmpty ? widget.cart.items.first.endDate : null,
+        startDate: widget.cart.items.isNotEmpty
+            ? widget.cart.items.first.startDate
+            : null,
+        endDate: widget.cart.items.isNotEmpty
+            ? widget.cart.items.first.endDate
+            : null,
         onRemoveItem: (CartItem item) {
           widget.cart.removeItem(item); // Use widget.cart here
           if (widget.cart.itemCount == 0) {
@@ -62,7 +65,7 @@ class _ReservationBottomBarState extends State<ReservationBottomBar> {
                     Stack(
                       children: [
                         IconButton(
-                          onPressed: widget.cart.itemCount > 0 
+                          onPressed: widget.cart.itemCount > 0
                               ? () => _showCartDetails(context)
                               : null,
                           icon: const Icon(Icons.shopping_cart),
@@ -130,10 +133,11 @@ class _ReservationBottomBarState extends State<ReservationBottomBar> {
 
                 // Checkout button
                 ElevatedButton(
-                  onPressed: widget.cart.itemCount > 0 ? widget.onProceed : null,
+                  onPressed:
+                      widget.cart.itemCount > 0 ? widget.onProceed : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: widget.cart.itemCount > 0 
-                        ? Colors.teal 
+                    backgroundColor: widget.cart.itemCount > 0
+                        ? Colors.teal
                         : const Color(0xFFC8CDCE),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(

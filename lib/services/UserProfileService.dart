@@ -25,6 +25,7 @@ class UserProfileService {
       throw Exception('Failed to load user data.');
     }
   }
+
   Future<void> updateUserProfile(
     BuildContext context, {
     required String name,
@@ -38,7 +39,7 @@ class UserProfileService {
     }
 
     final url = Uri.parse(ApiConstants.userProfile(userCd));
-    
+
     // Prepare body data
     Map<String, dynamic> body = {
       'name': name,

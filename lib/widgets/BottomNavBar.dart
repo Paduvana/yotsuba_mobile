@@ -7,7 +7,7 @@ import '../screens/ReservationList.dart';
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;
 
-  BottomNavBar({required this.selectedIndex});
+  const BottomNavBar({super.key, required this.selectedIndex});
 
   void _onItemTapped(BuildContext context, int index) {
     switch (index) {
@@ -20,7 +20,9 @@ class BottomNavBar extends StatelessWidget {
       case 1:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) =>  NewReservationPage()), // Navigate to the NewReservation page
+          MaterialPageRoute(
+              builder: (context) =>
+                  const NewReservationPage()), // Navigate to the NewReservation page
         );
         break;
       case 2:
@@ -65,7 +67,8 @@ class BottomNavBar extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       backgroundColor: Colors.white,
       selectedLabelStyle: const TextStyle(fontSize: 16),
-      unselectedLabelStyle: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+      unselectedLabelStyle:
+          const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       onTap: (index) => _onItemTapped(context, index),
     );
   }

@@ -5,13 +5,13 @@ import 'package:yotsuba_mobile/widgets/ProductWidget.dart';
 
 class ProductsGridView extends StatelessWidget {
   final List<dynamic> devices;
-  final Function(CartItem) onAddToCart; 
+  final Function(CartItem) onAddToCart;
 
   const ProductsGridView({
-    Key? key,
+    super.key,
     required this.devices,
     required this.onAddToCart,
-  }) : super(key: key);
+  });
 
   List<Widget> _buildProductWidgets(BuildContext context) {
     return devices.map((device) {
@@ -20,9 +20,10 @@ class ProductsGridView extends StatelessWidget {
       final reservedDates = device['reserved_dates'] ?? [];
       final devicePrice = double.tryParse(device['price'].toString()) ?? 0.0;
       final imageGallery = (device['images'] as List<dynamic>?)
-          ?.map((img) => img['path'] as String?)
-          .whereType<String>()
-          .toList() ?? ['assets/images/default_image.png'];
+              ?.map((img) => img['path'] as String?)
+              .whereType<String>()
+              .toList() ??
+          ['assets/images/default_image.png'];
       final availableCount = device['available_count'] ?? 1;
 
       if (devicePrice == 0.0) {
@@ -33,7 +34,9 @@ class ProductsGridView extends StatelessWidget {
       return ProductWidget(
         deviceId: deviceId,
         title: deviceName,
-        imagePath: imageGallery.isNotEmpty ? imageGallery[0] : 'assets/images/default_image.png',
+        imagePath: imageGallery.isNotEmpty
+            ? imageGallery[0]
+            : 'assets/images/default_image.png',
         basePrice: devicePrice,
         imageGallery: imageGallery,
         availableCount: availableCount,

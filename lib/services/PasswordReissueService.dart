@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:yotsuba_mobile/services/APIConstants.dart';
 import 'package:yotsuba_mobile/services/AuthService.dart';
-import 'package:http/http.dart' as http;
 
 class PasswordReissueService {
   final authService = AuthService();
 
-  Future<Map<String, dynamic>> requestPasswordReset(String email, BuildContext context) async {
+  Future<Map<String, dynamic>> requestPasswordReset(
+      String email, BuildContext context) async {
     final url = Uri.parse(ApiConstants.passwordReissueEndpoint);
 
     try {
@@ -34,11 +34,15 @@ class PasswordReissueService {
       } else {
         return {
           'success': false,
-          'message': 'Failed to send password reset request. Status code: ${response.statusCode}'
+          'message':
+              'Failed to send password reset request. Status code: ${response.statusCode}'
         };
       }
     } catch (e) {
-      return {'success': false, 'message': 'An error occurred. Please try again later.'};
+      return {
+        'success': false,
+        'message': 'An error occurred. Please try again later.'
+      };
     }
   }
 }
