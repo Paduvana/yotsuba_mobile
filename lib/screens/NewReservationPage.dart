@@ -66,7 +66,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
     }
   }
 
-  Future<void> _fetchDevices({String? startDate, String? endDate}) async {
+  Future<void> _fetchDevices({String? startDate, String? endDate, String? search, String? category}) async {
     if (!mounted || _isFetching) return;
 
     try {
@@ -83,8 +83,8 @@ class _NewReservationPageState extends State<NewReservationPage> {
         context,
         startDate: startDate!,
         endDate: endDate!,
-        category: '',
-        search: _keywordController.text,
+        category: category ?? '',
+        search: search ?? '',
       );
 
       if (mounted) {
@@ -119,6 +119,26 @@ class _NewReservationPageState extends State<NewReservationPage> {
     }
   }
 
+void _handleSearch(String keyword, String category) {
+    if (!mounted) return;
+    
+    setState(() => _isLoading = true);
+
+    final String startDate = _rentalDate != null 
+        ? DateFormat('yyyy-MM-dd').format(_rentalDate!)
+        : DateFormat('yyyy-MM-dd').format(DateTime.now());
+        
+    final String endDate = _returnDate != null
+        ? DateFormat('yyyy-MM-dd').format(_returnDate!)
+        : DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 1)));
+
+    _fetchDevices(
+      startDate: startDate,
+      endDate: endDate,
+      search: keyword,
+      category: category,
+    );
+  }
   void _handleAddToCart(CartItem item) {
     final CartItem cartItem = item.startDate == DateTime.now()
         ? CartItem(
@@ -245,7 +265,7 @@ class _NewReservationPageState extends State<NewReservationPage> {
             onDateChange: _handleDateChange,
           ),
           const SizedBox(height: 16),
-          SearchFilters(keywordController: _keywordController),
+          SearchFilters(keywordController: _keywordController,onSearch: _handleSearch,),
           const SizedBox(height: 16),
           Expanded(
             child: _isGridView
