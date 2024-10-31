@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:yotsuba_mobile/models/CartModels.dart';
 
-
 class CartDetailsDialog extends StatelessWidget {
   final Cart cart;
   final DateTime? startDate;
@@ -10,12 +9,12 @@ class CartDetailsDialog extends StatelessWidget {
   final Function(CartItem) onRemoveItem;
 
   const CartDetailsDialog({
-    Key? key,
+    super.key,
     required this.cart,
     required this.startDate,
     required this.endDate,
     required this.onRemoveItem,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

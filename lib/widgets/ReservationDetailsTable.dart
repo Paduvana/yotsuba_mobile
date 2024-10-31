@@ -5,31 +5,31 @@ class ReservationDetailsTable extends StatelessWidget {
   final List<Map<String, dynamic>> reservations;
 
   const ReservationDetailsTable({
-    Key? key,
+    super.key,
     required this.reservations,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Table(
-          columnWidths: const {
-            0: FlexColumnWidth(2), // More space for reservation number
-            1: FlexColumnWidth(3), // More space for usage period
-            2: FlexColumnWidth(1), // Less space for quantity
-            3: FlexColumnWidth(1), // Space for the button
-          },
-        children: [
-          // Header Row
-          TableRow(
-            children: [
-              _buildHeaderCell('予約No.'),
-              _buildHeaderCell('利用期間'),
-              _buildHeaderCell('数量'),
-              _buildHeaderCell('詳細'),
-            ],
-          ),
-          ..._buildDataRows(context), // Build data rows from reservations list
-        ],
+      columnWidths: const {
+        0: FlexColumnWidth(2), // More space for reservation number
+        1: FlexColumnWidth(3), // More space for usage period
+        2: FlexColumnWidth(1), // Less space for quantity
+        3: FlexColumnWidth(1), // Space for the button
+      },
+      children: [
+        // Header Row
+        TableRow(
+          children: [
+            _buildHeaderCell('予約No.'),
+            _buildHeaderCell('利用期間'),
+            _buildHeaderCell('数量'),
+            _buildHeaderCell('詳細'),
+          ],
+        ),
+        ..._buildDataRows(context), // Build data rows from reservations list
+      ],
     );
   }
 
@@ -38,9 +38,10 @@ class ReservationDetailsTable extends StatelessWidget {
       return TableRow(
         children: [
           _buildTableCell(reservation['id'].toString()),
-          _buildTableCell(_formatUsagePeriod('${reservation['start_date']} ~ \n${reservation['end_date']}')),
+          _buildTableCell(_formatUsagePeriod(
+              '${reservation['start_date']} ~ \n${reservation['end_date']}')),
           _buildTableCell(reservation['quantity'].toString()),
-          _buildButtonCell(context, reservation), 
+          _buildButtonCell(context, reservation),
         ],
       );
     }).toList();
@@ -70,7 +71,8 @@ class ReservationDetailsTable extends StatelessWidget {
     );
   }
 
-  Widget _buildButtonCell(BuildContext context, Map<String, dynamic> reservation) {
+  Widget _buildButtonCell(
+      BuildContext context, Map<String, dynamic> reservation) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
       child: Center(
@@ -87,14 +89,16 @@ class ReservationDetailsTable extends StatelessWidget {
                 builder: (BuildContext context) {
                   return ReservationDetailsDialog(
                     reservationNumber: reservation['id'],
-                    usagePeriod: '${reservation['start_date']} ~ \n${reservation['end_date']}',
+                    usagePeriod:
+                        '${reservation['start_date']} ~ \n${reservation['end_date']}',
                     quantity: reservation['quantity'].toString(),
                     total: '¥${reservation['price']}',
                     consumptionTax: '¥${reservation['tax']}',
                     machineName: reservation['device_name'],
                     numberOfDays: reservation['duration'],
                     period: 'Daily',
-                    reservationDate: DateTime.parse(reservation['reserve_date']),
+                    reservationDate:
+                        DateTime.parse(reservation['reserve_date']),
                     subTotal: '¥${reservation['sub_total']}',
                     unitPrice: '¥${reservation['unit_price']}',
                   );

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'Login.dart'; // Import your login page
 
 class PasswordCheck extends StatefulWidget {
+  const PasswordCheck({super.key});
+
   @override
   _PasswordCheckState createState() => _PasswordCheckState();
 }
@@ -9,7 +11,8 @@ class PasswordCheck extends StatefulWidget {
 class _PasswordCheckState extends State<PasswordCheck> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _isLoading = false;
 
   void setLoading(bool isLoading) {
@@ -27,7 +30,7 @@ class _PasswordCheckState extends State<PasswordCheck> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,  // Set background color to white
+      backgroundColor: Colors.white, // Set background color to white
       body: Stack(
         children: [
           Positioned(
@@ -67,7 +70,6 @@ class _PasswordCheckState extends State<PasswordCheck> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-
                         TextFormField(
                           controller: _emailController,
                           decoration: const InputDecoration(
@@ -92,18 +94,18 @@ class _PasswordCheckState extends State<PasswordCheck> {
                         _isLoading
                             ? const CircularProgressIndicator()
                             : ElevatedButton(
-                          onPressed: () {
-                            // Redirect to login page on success
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Login(),
+                                onPressed: () {
+                                  // Redirect to login page on success
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const Login(),
+                                    ),
+                                  );
+                                },
+                                style: style,
+                                child: const Text('Reissue Password'),
                               ),
-                            );
-                          },
-                          style: style,
-                          child: const Text('Reissue Password'),
-                        ),
                       ],
                     ),
                   ),

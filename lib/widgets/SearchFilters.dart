@@ -4,9 +4,9 @@ class SearchFilters extends StatefulWidget {
   final TextEditingController keywordController;
 
   const SearchFilters({
-    Key? key,
+    super.key,
     required this.keywordController,
-  }) : super(key: key);
+  });
 
   @override
   _SearchFiltersState createState() => _SearchFiltersState();
@@ -14,7 +14,11 @@ class SearchFilters extends StatefulWidget {
 
 class _SearchFiltersState extends State<SearchFilters> {
   String? _selectedCategory = '機械測定機器'; // Default category
-  final List<String> _categories = ['機械測定機器', '機械測定機器ー2', '機械測定機器ー3']; // Dropdown options
+  final List<String> _categories = [
+    '機械測定機器',
+    '機械測定機器ー2',
+    '機械測定機器ー3'
+  ]; // Dropdown options
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +31,10 @@ class _SearchFiltersState extends State<SearchFilters> {
           children: [
             const Text(
               'カテゴリーから探す',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54),
             ),
             const SizedBox(height: 8),
             Container(
@@ -45,7 +52,8 @@ class _SearchFiltersState extends State<SearchFilters> {
                     _selectedCategory = newValue;
                   });
                 },
-                items: _categories.map<DropdownMenuItem<String>>((String value) {
+                items:
+                    _categories.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -65,7 +73,10 @@ class _SearchFiltersState extends State<SearchFilters> {
           children: [
             const Text(
               'キーワードで探す',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black54),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54),
             ),
             const SizedBox(height: 8),
             Container(

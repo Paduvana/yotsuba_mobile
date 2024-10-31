@@ -7,11 +7,11 @@ class DateSelectionRow extends StatelessWidget {
   final Function(DateTime?, DateTime?) onDateChange;
 
   const DateSelectionRow({
-    Key? key,
+    super.key,
     required this.rentalDate,
     required this.returnDate,
     required this.onDateChange,
-  }) : super(key: key);
+  });
 
   Future<void> _selectDate(BuildContext context, bool isRentalDate) async {
     DateTime initialDate;
@@ -23,9 +23,9 @@ class DateSelectionRow extends StatelessWidget {
       firstDate = DateTime.now();
       lastDate = returnDate ?? DateTime(2101);
     } else {
-      initialDate = returnDate ?? 
-          (rentalDate?.add(const Duration(days: 1)) ?? 
-           DateTime.now().add(const Duration(days: 1)));
+      initialDate = returnDate ??
+          (rentalDate?.add(const Duration(days: 1)) ??
+              DateTime.now().add(const Duration(days: 1)));
       firstDate = rentalDate?.add(const Duration(days: 1)) ?? DateTime.now();
       lastDate = DateTime(2101);
     }
@@ -84,7 +84,9 @@ class DateSelectionRow extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  date != null ? DateFormat('yyyy/MM/dd').format(date) : '日付を選択',
+                  date != null
+                      ? DateFormat('yyyy/MM/dd').format(date)
+                      : '日付を選択',
                   style: TextStyle(
                     fontSize: 16,
                     color: date != null ? Colors.black : Colors.grey,

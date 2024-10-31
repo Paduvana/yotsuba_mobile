@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class ReservationModel {
@@ -50,9 +49,11 @@ class ReservationModel {
       status: json['status'] ?? 0,
       price: (json['price'] != null) ? json['price'].toDouble() : 0.0,
       billNumber: json['bill_number'] ?? '',
-      unitPrice: (json['unit_price'] != null) ? json['unit_price'].toDouble() : 0.0,
+      unitPrice:
+          (json['unit_price'] != null) ? json['unit_price'].toDouble() : 0.0,
       tax: (json['tax'] != null) ? json['tax'].toDouble() : 0.0,
-      subTotal: (json['sub_total'] != null) ? json['sub_total'].toDouble() : 0.0,
+      subTotal:
+          (json['sub_total'] != null) ? json['sub_total'].toDouble() : 0.0,
       reserveDate: json['reserve_date'] ?? '',
     );
   }
@@ -77,7 +78,8 @@ class ReservationModel {
       'reserve_date': reserveDate,
     };
   }
-    static const Map<String, Map<String, dynamic>> reservationMapping = {
+
+  static const Map<String, Map<String, dynamic>> reservationMapping = {
     "overdue_reservation": {
       "name": "返却期限が過ぎています。",
       "color": Colors.red,
@@ -96,4 +98,3 @@ class ReservationModel {
     },
   };
 }
-

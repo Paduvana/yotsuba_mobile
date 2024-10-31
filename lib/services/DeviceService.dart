@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:yotsuba_mobile/services/APIConstants.dart';
@@ -8,15 +9,14 @@ class DeviceService {
 
   DeviceService({required this.authService});
 
-  Future<Map<String, dynamic>> fetchDeviceData(BuildContext context, {
-    required String startDate,
-    required String endDate,
-    required String category,
-    required String search
-  }) async {
+  Future<Map<String, dynamic>> fetchDeviceData(BuildContext context,
+      {required String startDate,
+      required String endDate,
+      required String category,
+      required String search}) async {
     // Construct the URL with query parameters
-    final url = Uri.parse(ApiConstants.deviceListEndpoint)
-        .replace(queryParameters: {
+    final url =
+        Uri.parse(ApiConstants.deviceListEndpoint).replace(queryParameters: {
       'start_date': startDate,
       'end_date': endDate,
       'category': category,
@@ -28,11 +28,14 @@ class DeviceService {
       if (response.statusCode == 200) {
         return jsonDecode(utf8.decode(response.bodyBytes));
       } else {
-        throw Exception('Failed to load devices data: ${response.reasonPhrase}');
+        throw Exception(
+            'Failed to load devices data: ${response.reasonPhrase}');
       }
     } catch (e) {
-      print('Error fetching reservation data: $e');
-      rethrow; 
+      if (kDebugMode) {
+        print('Error fetching reservation data: $e');
+      }
+      rethrow;
     }
   }
 }

@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:yotsuba_mobile/screens/Login.dart';
 import 'package:yotsuba_mobile/services/APIConstants.dart';
-import 'dart:typed_data';
 
 class AuthService {
   // Create storage
@@ -59,7 +58,6 @@ class AuthService {
         throw Exception('Failed to refresh token');
       }
     } catch (e) {
-      print('Token refresh error: $e');
       rethrow;
     }
   }
@@ -101,7 +99,6 @@ class AuthService {
 
       return response;
     } catch (e) {
-      print('Request error: $e');
       rethrow;
     }
   }
@@ -134,11 +131,9 @@ class AuthService {
 
       // Add files
       for (var entry in files.entries) {
-        if (entry.value != null) {
-          request.files.add(
-            await http.MultipartFile.fromPath(entry.key, entry.value.path),
-          );
-        }
+        request.files.add(
+          await http.MultipartFile.fromPath(entry.key, entry.value.path),
+        );
       }
 
       // Send request and convert to Response
@@ -177,7 +172,7 @@ class AuthService {
   void _redirectToLoginPage(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => Login()),
+      MaterialPageRoute(builder: (context) => const Login()),
     );
   }
 }

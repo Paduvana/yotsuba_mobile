@@ -5,9 +5,8 @@ import 'package:yotsuba_mobile/services/AuthService.dart';
 import 'package:yotsuba_mobile/widgets/CustomAppBar.dart';
 import 'package:yotsuba_mobile/widgets/ReservationDetailsTable.dart';
 
-
 class ReservationList extends StatefulWidget {
-  const ReservationList({Key? key}) : super(key: key);
+  const ReservationList({super.key});
 
   @override
   _ReservationListState createState() => _ReservationListState();
@@ -15,7 +14,7 @@ class ReservationList extends StatefulWidget {
 
 class _ReservationListState extends State<ReservationList> {
   bool showCurrent = true; // Toggle between Current and Past reservations
-  int _selectedIndex = 2; // Start with the third tab selected
+  final int _selectedIndex = 2; // Start with the third tab selected
   List<bool> isSelected = [true, false]; // For ToggleButtons
 
   Map<String, dynamic> _reservationData = {};
@@ -60,65 +59,64 @@ class _ReservationListState extends State<ReservationList> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(title: '予約確認',hideBackButton: true),
+      appBar: const CustomAppBar(title: '予約確認', hideBackButton: true),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
-          ? Center(child: Text(_errorMessage!))
-          : _buildReservationDetails(),
+              ? Center(child: Text(_errorMessage!))
+              : _buildReservationDetails(),
       bottomNavigationBar: BottomNavBar(selectedIndex: _selectedIndex),
     );
   }
 
-Widget _buildReservationDetails() {
-  List<Map<String, dynamic>> reservationsToShow = (showCurrent
-          ? _reservationData['current_reservations']
-          : _reservationData['past_reservations'])
-      ?.cast<Map<String, dynamic>>() ??
-      [];
+  Widget _buildReservationDetails() {
+    List<Map<String, dynamic>> reservationsToShow = (showCurrent
+                ? _reservationData['current_reservations']
+                : _reservationData['past_reservations'])
+            ?.cast<Map<String, dynamic>>() ??
+        [];
 
-  return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: Column(
-      children: [
-        // Toggle Buttons for Current and Past Reservations
-        ToggleButtons(
-          isSelected: isSelected,
-          onPressed: (int index) {
-            setState(() {
-              for (int i = 0; i < isSelected.length; i++) {
-                isSelected[i] = i == index;
-              }
-              showCurrent = index == 0;
-            });
-          },
-          color: Colors.green,
-          selectedColor: Colors.white,
-          fillColor: Colors.green,
-          borderRadius: BorderRadius.circular(10),
-          borderColor: Colors.green,
-          selectedBorderColor: Colors.green,
-          children: const [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text('現在の予約'),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          // Toggle Buttons for Current and Past Reservations
+          ToggleButtons(
+            isSelected: isSelected,
+            onPressed: (int index) {
+              setState(() {
+                for (int i = 0; i < isSelected.length; i++) {
+                  isSelected[i] = i == index;
+                }
+                showCurrent = index == 0;
+              });
+            },
+            color: Colors.green,
+            selectedColor: Colors.white,
+            fillColor: Colors.green,
+            borderRadius: BorderRadius.circular(10),
+            borderColor: Colors.green,
+            selectedBorderColor: Colors.green,
+            children: const [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text('現在の予約'),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text('過去の予約'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical, // Enable vertical scrolling
+              child: ReservationDetailsTable(reservations: reservationsToShow),
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text('過去の予約'),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Expanded(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical, // Enable vertical scrolling
-        child: ReservationDetailsTable(reservations: reservationsToShow),
-       ),
-      ),  
-      ],
-    ),
-  );
+          ),
+        ],
+      ),
+    );
+  }
 }
-
- }

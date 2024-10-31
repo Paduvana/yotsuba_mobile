@@ -1,6 +1,4 @@
-// lib/models/cart.dart
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,33 +29,33 @@ class CartItem {
   double get total => price * quantity * duration;
 
   Map<String, dynamic> toJson() => {
-    'device': deviceId,
-    'name': name,
-    'price': price,
-    'quantity': quantity,
-    'start_date': DateFormat('yyyy-MM-dd').format(startDate),
-    'end_date': DateFormat('yyyy-MM-dd').format(endDate),
-    'duration': duration,
-    'status': status,
-    'remarks': remarks,
-  };
+        'device': deviceId,
+        'name': name,
+        'price': price,
+        'quantity': quantity,
+        'start_date': DateFormat('yyyy-MM-dd').format(startDate),
+        'end_date': DateFormat('yyyy-MM-dd').format(endDate),
+        'duration': duration,
+        'status': status,
+        'remarks': remarks,
+      };
 
   factory CartItem.fromJson(Map<String, dynamic> json) => CartItem(
-    deviceId: json['device'],
-    name: json['name'],
-    price: json['price'].toDouble(),
-    quantity: json['quantity'],
-    startDate: DateFormat('yyyy-MM-dd').parse(json['start_date']),
-    endDate: DateFormat('yyyy-MM-dd').parse(json['end_date']),
-    duration: json['duration'],
-    status: json['status'] ?? 0,
-    remarks: json['remarks'],
-  );
+        deviceId: json['device'],
+        name: json['name'],
+        price: json['price'].toDouble(),
+        quantity: json['quantity'],
+        startDate: DateFormat('yyyy-MM-dd').parse(json['start_date']),
+        endDate: DateFormat('yyyy-MM-dd').parse(json['end_date']),
+        duration: json['duration'],
+        status: json['status'] ?? 0,
+        remarks: json['remarks'],
+      );
 }
 
 class Cart extends ChangeNotifier {
   List<CartItem> items = [];
-  
+
   double get total => items.fold(0, (sum, item) => sum + item.total);
   int get itemCount => items.length;
   double get tax => total * 0.10; // 10% tax rate
@@ -72,7 +70,7 @@ class Cart extends ChangeNotifier {
   void removeItem(CartItem item) {
     items.remove(item);
     saveToStorage();
-    notifyListeners();  
+    notifyListeners();
   }
 
   void clear() {
@@ -84,10 +82,13 @@ class Cart extends ChangeNotifier {
   Future<void> saveToStorage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final String jsonString = jsonEncode(items.map((e) => e.toJson()).toList());
+      final String jsonString =
+          jsonEncode(items.map((e) => e.toJson()).toList());
       await prefs.setString('cart_items', jsonString);
     } catch (e) {
-      print('Error saving cart: $e');
+      if (kDebugMode) {
+        print('Error saving cart: $e');
+      }
     }
   }
 
@@ -98,10 +99,12 @@ class Cart extends ChangeNotifier {
       if (jsonString != null) {
         final List<dynamic> jsonList = jsonDecode(jsonString);
         items = jsonList.map((json) => CartItem.fromJson(json)).toList();
-        notifyListeners();  // Notify listeners after loading
+        notifyListeners(); // Notify listeners after loading
       }
     } catch (e) {
-      print('Error loading cart: $e');
+      if (kDebugMode) {
+        print('Error loading cart: $e');
+      }
     }
   }
 }

@@ -5,7 +5,7 @@ import '../services/LoginService.dart';
 import 'ReissuePassword.dart';
 
 class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+  const Login({super.key});
 
   @override
   _LoginState createState() => _LoginState();
@@ -51,8 +51,9 @@ class _LoginState extends State<Login> {
       print('Attempting login with username: $username');
       print('Login endpoint: ${ApiConstants.loginEndpoint}');
 
-      final result = await loginService(context, username, password, setLoading);
-      
+      final result =
+          await loginService(context, username, password, setLoading);
+
       if (result == LoginResult.success) {
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/home');
@@ -182,7 +183,7 @@ class _LoginState extends State<Login> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ReissuePassword(),
+                                builder: (context) => const ReissuePassword(),
                               ),
                             );
                           },

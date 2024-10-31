@@ -8,15 +8,15 @@ class CheckOutDialog extends StatelessWidget {
   final DateTime endDate;
   final Color backgroundColor;
   final Color titleColor;
-  
+
   const CheckOutDialog({
-    Key? key,
+    super.key,
     required this.items,
     required this.startDate,
     required this.endDate,
     this.backgroundColor = Colors.white,
     this.titleColor = Colors.black,
-  }) : super(key: key);
+  });
 
   double get subtotal => items.fold(0, (sum, item) => sum + item.total);
   double get consumptionTaxAmount => subtotal * 0.1;
@@ -54,12 +54,14 @@ class CheckOutDialog extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            
+
             // Reservation Date
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('予約期間', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+                const Text('予約期間',
+                    style:
+                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 5),
                 Container(
                   decoration: BoxDecoration(
@@ -79,15 +81,31 @@ class CheckOutDialog extends StatelessWidget {
             // Table Headers
             const Row(
               children: [
-                Expanded(flex: 2, child: Text('機器/期間', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
-                Expanded(child: Text('数量', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
-                Expanded(child: Text('単価', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
-                Expanded(child: Text('日数', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
-                Expanded(child: Text('金額', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))),
+                Expanded(
+                    flex: 2,
+                    child: Text('機器/期間',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold))),
+                Expanded(
+                    child: Text('数量',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold))),
+                Expanded(
+                    child: Text('単価',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold))),
+                Expanded(
+                    child: Text('日数',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold))),
+                Expanded(
+                    child: Text('金額',
+                        style: TextStyle(
+                            fontSize: 16.0, fontWeight: FontWeight.bold))),
               ],
             ),
             const Divider(thickness: 1.0, color: Colors.grey),
-            
+
             // Items List
             Expanded(
               child: ListView.builder(
@@ -132,25 +150,31 @@ class CheckOutDialog extends StatelessWidget {
                 },
               ),
             ),
-            
+
             const Divider(thickness: 1.0, color: Colors.grey),
-            
+
             // Totals
             Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('消費税', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    const Text('消費税',
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey)),
                     Container(
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
                       child: Text(
                         '¥${consumptionTaxAmount.toStringAsFixed(0)}',
-                        style: const TextStyle(fontSize: 16.0, color: Colors.black),
+                        style: const TextStyle(
+                            fontSize: 16.0, color: Colors.black),
                       ),
                     ),
                   ],
@@ -159,16 +183,22 @@ class CheckOutDialog extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('合計（税込）', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    const Text('合計（税込）',
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey)),
                     Container(
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
                       child: Text(
                         '¥${total.toStringAsFixed(0)}',
-                        style: const TextStyle(fontSize: 16.0, color: Colors.black),
+                        style: const TextStyle(
+                            fontSize: 16.0, color: Colors.black),
                       ),
                     ),
                   ],
@@ -179,13 +209,17 @@ class CheckOutDialog extends StatelessWidget {
                   children: [
                     const SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed: () => Navigator.pop(context, true), // Return true to proceed with checkout
+                      onPressed: () => Navigator.pop(context,
+                          true), // Return true to proceed with checkout
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
                       ),
-                      child: const Text('予約を確定する',style: const TextStyle(
-                            color: Colors.white,
-                          ),),
+                      child: const Text(
+                        '予約を確定する',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ],
                 ),

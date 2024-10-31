@@ -4,13 +4,13 @@ import 'package:yotsuba_mobile/widgets/ProductWidget.dart';
 
 class ProductsListView extends StatelessWidget {
   final List<dynamic> devices;
-  final Function(CartItem) onAddToCart; 
+  final Function(CartItem) onAddToCart;
 
   const ProductsListView({
-    Key? key,
+    super.key,
     required this.devices,
     required this.onAddToCart,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +21,19 @@ class ProductsListView extends StatelessWidget {
         return ProductWidget(
           deviceId: device['id'],
           title: device['name'] ?? 'Unknown Device',
-          imagePath: device['images']?.isNotEmpty 
-              ? device['images'][0]['path'] 
+          imagePath: device['images']?.isNotEmpty
+              ? device['images'][0]['path']
               : 'assets/images/default_image.png',
           basePrice: double.tryParse(device['price'].toString()) ?? 0.0,
           imageGallery: (device['images'] as List<dynamic>?)
-              ?.map((img) => img['path'] as String?)
-              .whereType<String>()
-              .toList() ?? [],
+                  ?.map((img) => img['path'] as String?)
+                  .whereType<String>()
+                  .toList() ??
+              [],
           availableCount: device['available_count'] ?? 1,
           reservedDates: device['reserved_dates'] ?? [],
-          onAddToCart: onAddToCart, isInCart: false,
+          onAddToCart: onAddToCart,
+          isInCart: false,
         );
       },
     );

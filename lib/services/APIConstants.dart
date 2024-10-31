@@ -13,7 +13,7 @@ class ApiConstants {
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
-    
+
     return '$appUrl$imagePath';
   }
 }

@@ -3,6 +3,8 @@ import 'package:yotsuba_mobile/services/PasswordReissueService.dart';
 import 'package:yotsuba_mobile/screens/Login.dart';
 
 class ReissuePassword extends StatefulWidget {
+  const ReissuePassword({super.key});
+
   @override
   _ReissuePasswordState createState() => _ReissuePasswordState();
 }
@@ -29,7 +31,8 @@ class _ReissuePasswordState extends State<ReissuePassword> {
     }
 
     setLoading(true);
-    final response = await _passwordResetService.requestPasswordReset(email, context);
+    final response =
+        await _passwordResetService.requestPasswordReset(email, context);
     setLoading(false);
 
     if (response['success']) {
@@ -46,7 +49,7 @@ class _ReissuePasswordState extends State<ReissuePassword> {
   void _navigateToLogin(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => Login()),
+      MaterialPageRoute(builder: (context) => const Login()),
     );
   }
 
@@ -104,7 +107,8 @@ class _ReissuePasswordState extends State<ReissuePassword> {
                             _isLoading
                                 ? const CircularProgressIndicator()
                                 : ElevatedButton(
-                                    onPressed: () => _handlePasswordReset(context),
+                                    onPressed: () =>
+                                        _handlePasswordReset(context),
                                     style: style,
                                     child: const Text('再発行'),
                                   ),
@@ -114,7 +118,8 @@ class _ReissuePasswordState extends State<ReissuePassword> {
                     : Container(
                         padding: const EdgeInsets.all(20.0),
                         decoration: BoxDecoration(
-                          color: Colors.white, // White background for readability
+                          color:
+                              Colors.white, // White background for readability
                           borderRadius: BorderRadius.circular(10.0),
                           border: Border.all(color: Colors.black, width: 2.0),
                         ),
@@ -123,7 +128,8 @@ class _ReissuePasswordState extends State<ReissuePassword> {
                           children: [
                             Text(
                               _message!,
-                              style: const TextStyle(fontSize: 18, color: Colors.black),
+                              style: const TextStyle(
+                                  fontSize: 18, color: Colors.black),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 24),

@@ -11,11 +11,11 @@ class ProductWidget extends StatefulWidget {
   final List<String> imageGallery;
   final int availableCount;
   final List<dynamic> reservedDates;
-  final Function(CartItem) onAddToCart; 
+  final Function(CartItem) onAddToCart;
   final bool isInCart;
 
   const ProductWidget({
-    Key? key,
+    super.key,
     required this.deviceId,
     required this.title,
     required this.imagePath,
@@ -25,7 +25,7 @@ class ProductWidget extends StatefulWidget {
     required this.reservedDates,
     required this.onAddToCart,
     required this.isInCart,
-  }) : super(key: key);
+  });
 
   @override
   _ProductWidgetState createState() => _ProductWidgetState();
@@ -42,8 +42,9 @@ class _ProductWidgetState extends State<ProductWidget> {
     super.initState();
     _totalPrice = widget.basePrice;
     _quantity = widget.availableCount > 0 ? 1 : 0;
-     _isAddedToCart = widget.isInCart;
+    _isAddedToCart = widget.isInCart;
   }
+
   @override
   void didUpdateWidget(ProductWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -53,11 +54,13 @@ class _ProductWidgetState extends State<ProductWidget> {
       });
     }
   }
+
   void _updatePrice(int quantity) {
     setState(() {
       _totalPrice = widget.basePrice * quantity;
     });
   }
+
   void _updateQuantity(int? newValue) {
     if (newValue != null && newValue > 0 && newValue <= widget.availableCount) {
       setState(() {
@@ -65,9 +68,10 @@ class _ProductWidgetState extends State<ProductWidget> {
       });
     }
   }
-void _showImageGallery(BuildContext context) {
+
+  void _showImageGallery(BuildContext context) {
     if (widget.imageGallery.isEmpty) return;
-    
+
     showDialog(
       context: context,
       builder: (context) {
@@ -127,6 +131,7 @@ void _showImageGallery(BuildContext context) {
       },
     );
   }
+
   Widget _buildNetworkImage(String imageUrl) {
     print(ApiConstants.getImageUrl(imageUrl));
     return Image.network(
@@ -157,7 +162,6 @@ void _showImageGallery(BuildContext context) {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final bool isAvailable = widget.availableCount > 0;
@@ -169,11 +173,16 @@ void _showImageGallery(BuildContext context) {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: _isAddedToCart ? Colors.blue.shade100 : (isAvailable ? Colors.grey.shade300 : Colors.grey.shade700),
+              color: _isAddedToCart
+                  ? Colors.blue.shade100
+                  : (isAvailable ? Colors.grey.shade300 : Colors.grey.shade700),
               border: Border.all(color: Colors.grey.shade300),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
-                BoxShadow(color: Colors.grey.withOpacity(0.2), blurRadius: 8, offset: Offset(0, 4)),
+                BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4)),
               ],
             ),
             child: Row(
@@ -185,17 +194,23 @@ void _showImageGallery(BuildContext context) {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       GestureDetector(
-                        onTap: isAvailable && widget.imageGallery.isNotEmpty ? () => _showImageGallery(context) : null,
+                        onTap: isAvailable && widget.imageGallery.isNotEmpty
+                            ? () => _showImageGallery(context)
+                            : null,
                         child: Container(
                           width: double.infinity,
                           height: 150,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: isAvailable ? Colors.grey.shade200 : Colors.grey.shade500,
+                            color: isAvailable
+                                ? Colors.grey.shade200
+                                : Colors.grey.shade500,
                             image: DecorationImage(
-                              image: NetworkImage(ApiConstants.getImageUrl(widget.imagePath)),
+                              image: NetworkImage(
+                                  ApiConstants.getImageUrl(widget.imagePath)),
                               fit: BoxFit.cover,
-                              onError: (_, __) => const AssetImage('assets/images/default_image.png'),
+                              onError: (_, __) => const AssetImage(
+                                  'assets/images/default_image.png'),
                             ),
                           ),
                         ),
@@ -213,7 +228,8 @@ void _showImageGallery(BuildContext context) {
                     children: [
                       Text(
                         widget.title,
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
@@ -245,9 +261,10 @@ void _showImageGallery(BuildContext context) {
 
   Widget _buildQuantitySelector(bool isAvailable) {
     // Ensure we have valid items for the dropdown
-    final List<int> availableQuantities = isAvailable && widget.availableCount > 0
-        ? List<int>.generate(widget.availableCount, (index) => index + 1)
-        : [0];
+    final List<int> availableQuantities =
+        isAvailable && widget.availableCount > 0
+            ? List<int>.generate(widget.availableCount, (index) => index + 1)
+            : [0];
 
     // Ensure _quantity is in the available range
     if (!availableQuantities.contains(_quantity)) {
@@ -275,7 +292,8 @@ void _showImageGallery(BuildContext context) {
               style: const TextStyle(color: Colors.black),
               isExpanded: true,
               alignment: Alignment.center,
-              icon: const Icon(Icons.keyboard_arrow_down_sharp, color: Colors.grey),
+              icon: const Icon(Icons.keyboard_arrow_down_sharp,
+                  color: Colors.grey),
               items: availableQuantities.map((int value) {
                 return DropdownMenuItem<int>(
                   value: value,
@@ -295,6 +313,7 @@ void _showImageGallery(BuildContext context) {
       ],
     );
   }
+
   Widget _buildPriceRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -322,29 +341,33 @@ void _showImageGallery(BuildContext context) {
 
   Widget _buildAddToCartButton(bool isAvailable) {
     return ElevatedButton(
-      onPressed: isAvailable ? () {
-        final cartItem = CartItem(
-          deviceId: widget.deviceId,
-          name: widget.title,
-          price: widget.basePrice,
-          quantity: _quantity,
-          startDate: DateTime.now(), 
-          endDate: DateTime.now().add(const Duration(days: 1)),
-          duration: 1,
-        );
-        setState(() {_isAddedToCart = !_isAddedToCart;});
-        widget.onAddToCart(cartItem);
-      } : null,
+      onPressed: isAvailable
+          ? () {
+              final cartItem = CartItem(
+                deviceId: widget.deviceId,
+                name: widget.title,
+                price: widget.basePrice,
+                quantity: _quantity,
+                startDate: DateTime.now(),
+                endDate: DateTime.now().add(const Duration(days: 1)),
+                duration: 1,
+              );
+              setState(() {
+                _isAddedToCart = !_isAddedToCart;
+              });
+              widget.onAddToCart(cartItem);
+            }
+          : null,
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
-        backgroundColor:  _isAddedToCart ? Colors.blue : Colors.teal,
+        backgroundColor: _isAddedToCart ? Colors.blue : Colors.teal,
         disabledBackgroundColor: const Color.fromARGB(255, 71, 94, 92),
       ),
       child: Text(_isAddedToCart ? 'カートから外す' : 'カートに入れる'),
     );
   }
 
- Widget _buildSetPeriodButton() {
+  Widget _buildSetPeriodButton() {
     return OutlinedButton(
       onPressed: () async {
         final result = await showDialog<Map<String, dynamic>>(
@@ -356,7 +379,7 @@ void _showImageGallery(BuildContext context) {
             quantity: 1,
           ),
         );
-        
+
         if (result != null) {
           final cartItem = CartItem(
             deviceId: widget.deviceId,
@@ -378,34 +401,37 @@ void _showImageGallery(BuildContext context) {
       child: const Text('個別に期間を設定する'),
     );
   }
-List<DateTime> _parseReservedDates(List<dynamic> reservedDates) {
-  List<DateTime> allReservedDates = [];
 
-  for (var dateEntry in reservedDates) {
-    try {
-      if (dateEntry.contains(',')) {
-        List<String> dateRange = dateEntry.split(',');
-        DateTime startDate = DateTime.parse(dateRange[0]);
-        DateTime endDate = DateTime.parse(dateRange[1]);
+  List<DateTime> _parseReservedDates(List<dynamic> reservedDates) {
+    List<DateTime> allReservedDates = [];
 
-        for (DateTime date = startDate; date.isBefore(endDate.add(const Duration(days: 1))); date = date.add(const Duration(days: 1))) {
-          allReservedDates.add(date);
+    for (var dateEntry in reservedDates) {
+      try {
+        if (dateEntry.contains(',')) {
+          List<String> dateRange = dateEntry.split(',');
+          DateTime startDate = DateTime.parse(dateRange[0]);
+          DateTime endDate = DateTime.parse(dateRange[1]);
+
+          for (DateTime date = startDate;
+              date.isBefore(endDate.add(const Duration(days: 1)));
+              date = date.add(const Duration(days: 1))) {
+            allReservedDates.add(date);
+          }
+        } else {
+          DateTime singleDate = DateTime.parse(dateEntry);
+          allReservedDates.add(singleDate);
         }
-      } else {
-        DateTime singleDate = DateTime.parse(dateEntry);
-        allReservedDates.add(singleDate);
+      } catch (e) {
+        print("Invalid date format in reserved dates: $e");
       }
-    } catch (e) {
-      print("Invalid date format in reserved dates: $e");
     }
+
+    return allReservedDates.toSet().toList(); // Remove duplicates if any
   }
 
-  return allReservedDates.toSet().toList(); // Remove duplicates if any
-}
-
-Widget _buildReservationIndicator() {
+  Widget _buildReservationIndicator() {
     DateTime today = DateTime.now();
-    List<DateTime> reservedDates =_parseReservedDates(widget.reservedDates);
+    List<DateTime> reservedDates = _parseReservedDates(widget.reservedDates);
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -440,13 +466,15 @@ Widget _buildReservationIndicator() {
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(6, (i) => Text('${i * 5 + 1}', style: const TextStyle(fontSize: 10))),
+            children: List.generate(
+                6,
+                (i) =>
+                    Text('${i * 5 + 1}', style: const TextStyle(fontSize: 10))),
           ),
         ],
       ),
     );
   }
-
 
   Widget _buildIndicator(Color color, String text) {
     return Row(
