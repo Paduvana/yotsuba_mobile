@@ -45,8 +45,5 @@ flutter:
 flutter_icons:
   android: true
   ios: true
-  web: true
-  windows: true
-  macos: true
   remove_alpha_ios: true
-  image_path: "asset/images/シャアBO ロゴ .png"
+  image_path: "asset/images/logo_square.png"
