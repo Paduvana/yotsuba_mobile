@@ -2,21 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:yotsuba_mobile/models/CartModels.dart';
 
-class CheckOutDialog extends StatelessWidget {
+class CheckOutDialog extends StatefulWidget {
   final List<CartItem> items;
   final DateTime startDate;
   final DateTime endDate;
   final Color backgroundColor;
   final Color titleColor;
+  final Function(CartItem) onRemoveItem;
 
   const CheckOutDialog({
     super.key,
     required this.items,
     required this.startDate,
     required this.endDate,
+    required this.onRemoveItem,
     this.backgroundColor = Colors.white,
     this.titleColor = Colors.black,
   });
+
+  @override
+  _CheckOutDialogState createState() => _CheckOutDialogState();
+}
+
+class _CheckOutDialogState extends State<CheckOutDialog> {
+  late List<CartItem> items;
+
+  @override
+  void initState() {
+    super.initState();
+    items = List.from(widget.items); // Make a copy to work with locally
+  }
 
   double get subtotal => items.fold(0, (sum, item) => sum + item.total);
   double get consumptionTaxAmount => subtotal * 0.1;
@@ -42,7 +57,7 @@ class CheckOutDialog extends StatelessWidget {
                     '予約内容確認',
                     style: TextStyle(
                       fontSize: 15.0,
-                      color: titleColor,
+                      color: widget.titleColor,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -70,7 +85,7 @@ class CheckOutDialog extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    '${DateFormat('yyyy/MM/dd').format(startDate)} ~ ${DateFormat('yyyy/MM/dd').format(endDate)}',
+                    '${DateFormat('yyyy/MM/dd').format(widget.startDate)} ~ ${DateFormat('yyyy/MM/dd').format(widget.endDate)}',
                     style: const TextStyle(fontSize: 16.0),
                   ),
                 ),
@@ -114,6 +129,18 @@ class CheckOutDialog extends StatelessWidget {
                   final item = items[index];
                   return Row(
                     children: [
+                      IconButton(
+                        icon: const Icon(Icons.cancel_outlined, color: Colors.black, size: 20),
+                        onPressed: () {
+                          // Remove the item locally and update the UI
+                          setState(() {
+                            items.remove(item);
+                          });
+
+                          // Call the callback to update the cart in the parent widget
+                          widget.onRemoveItem(item);
+                        },
+                      ),
                       Expanded(
                         flex: 2,
                         child: Text(

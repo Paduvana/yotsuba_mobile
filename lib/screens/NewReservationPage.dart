@@ -232,6 +232,12 @@ void _handleSearch(String keyword, String category) {
         items: cart.items,
         startDate: _rentalDate!,
         endDate: _returnDate!,
+        onRemoveItem: (CartItem item) {
+          setState(() {
+            cart.items.remove(item); // Update the cart's items list
+        cart.saveToStorage();  // Save updated cart to storage if needed
+          });
+        },
       ),
     );
 

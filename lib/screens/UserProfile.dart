@@ -248,7 +248,7 @@ class _UserProfileState extends State<UserProfile> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('アップデート'),
+              child: const Text('更新する'),
             ),
             const Spacer(),
             ElevatedButton(
